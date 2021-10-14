@@ -1,0 +1,56 @@
+-- phpMyAdmin SQL Dump
+-- version 5.1.1
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Creato il: Set 20, 2021 alle 15:03
+-- Versione del server: 10.4.19-MariaDB
+-- Versione PHP: 7.4.20
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `metallurgica`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Struttura della tabella `advisory_heads`
+--
+
+CREATE TABLE `advisory_heads` (
+  `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` int(11) NOT NULL,
+  `ol` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `code_product` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `total_real` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `total_theoretical` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `date_material` date DEFAULT NULL,
+  `date_macchine` date DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Indici per le tabelle scaricate
+--
+
+--
+-- Indici per le tabelle `advisory_heads`
+--
+ALTER TABLE `advisory_heads`
+  ADD PRIMARY KEY (`id`);
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

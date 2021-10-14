@@ -1,0 +1,197 @@
+{
+  "menu": [
+    {
+      "name": "Dashboards",
+      "icon": "home",
+      "slug": "",
+      "role" : ["super-admin","admin","user"],
+      "permission" : "*",
+      "url": ""
+    },
+    {
+      "name": "Administator",
+      "icon": "package",
+      "dropdown": "1",
+      "slug": "",
+      "role" : ["super-admin","admin","user"],
+      "permission" : ["user_create","user_list"],
+      "submenu": [
+        {
+          "name": "Users",
+          "icon": "list",
+          "slug": "",
+          "role" : ["super-admin","admin","user"],
+          "permission" : ["user_create","user_list"],
+          "submenu": [
+            {
+              "url": "user/index",
+              "name": "Users List",
+              "icon": "credit-card",
+              "slug": "user.index",
+              "role" : ["super-admin","admin","user"],
+              "permission" : ["user_list"]
+            },
+            {
+              "url": "user/create",
+              "name": "User New",
+              "icon": "plus-circle",
+              "slug": "user.create",
+              "role" : ["super-admin","admin","user"],
+              "permission" : ["user_create"]
+            },
+            {
+              "url": "management/role",
+              "name": "Roles/Permissions",
+              "icon": "command",
+              "slug": "management.role",
+              "role" : ["super-admin"],
+              "permission" : ["*"]
+            }
+          ]
+        },
+        {
+          "name": "Categories Workflow",
+          "icon": "list",
+          "slug": "",
+          "role" : ["super-admin"],
+          "permission" : ["*"],
+          "submenu": [
+            {
+              "url": "category/index",
+              "name": "Category List",
+              "icon": "credit-card",
+              "slug": "category.index",
+              "role" : ["super-admin"],
+              "permission" : ["*"]
+            },
+            {
+              "url": "category/create",
+              "name": "Category New",
+              "icon": "plus-circle",
+              "slug": "category.create",
+              "role" : ["super-admin"],
+              "permission" : ["*"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Office It",
+      "icon": "package",
+      "dropdown": "1",
+      "slug": "",
+      "role" : ["super-admin","admin","user"],
+      "permission" : ["adivisory_list","workProgress_list","workProgress_withdrawals"],
+      "submenu": [
+        {
+          "url": "workstatus/index",
+          "name": "Work Progress",
+          "icon": "dollar-sign",
+          "slug": "workstatus.index",
+          "role" : ["super-admin","admin","user"],
+          "permission" : ["workProgress_list","workProgress_withdrawals"]
+        },
+        {
+          "url": "advisorys/index",
+          "name": "Advisorys",
+          "icon": "dollar-sign",
+          "slug": "workstatus.advisorys",
+          "role" : ["super-admin","admin","user"],
+          "permission" : ["adivisory_list","workProgress_list","workProgress_withdrawals"]
+        },
+        {
+          "url": "workstatus/setting",
+          "name": "Setting",
+          "icon": "settings",
+          "slug": "workstatus.setting",
+          "role" : "super-admin|admin|user",
+          "permission" : "*",
+          "submenu": [
+            {
+              "name": "Cost Management",
+              "icon": "dollar-sign",
+              "slug": "workstatus.setting.costs",
+              "url": "workstatus/setting/costs",
+              "role" : "super-admin|admin|user",
+              "permission" : "*"
+            }
+
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Office Technical",
+      "icon": "tool",
+      "dropdown": "1",
+      "slug": "",
+      "role" : ["super-admin","admin","user"],
+      "permission" : ["documents_list","documents_create","documents_approval"],
+      "submenu": [
+        {
+          "name": "Documents",
+          "icon": "list",
+          "slug": "",
+          "role" : ["super-admin","admin","user"],
+          "permission" : ["documents_list","documents_create","documents_approval"],
+          "submenu": [
+            {
+              "url": "document/index",
+              "name": "Document List",
+              "icon": "archive",
+              "slug": "document.index",
+              "role" : ["super-admin","admin","user"],
+              "permission" : ["documents_list","documents_approval"]
+            },
+            {
+              "url": "document/create",
+              "name": "Document New",
+              "icon": "plus",
+              "slug": "document.create",
+              "role" : ["super-admin","admin","user"],
+              "permission" : ["documents_create","documents_approval"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Workflow",
+      "icon": "mail",
+      "dropdown": "1",
+      "slug": "",
+      "role" : ["super-admin","admin","user"],
+      "permission" : ["workflow_list","workflow_create","workflow_approval"],
+      "submenu": [
+        {
+          "name": "Workflow",
+          "icon": "list",
+          "slug": "",
+          "role" : ["super-admin","admin","user"],
+          "permission" : ["workflow_list","workflow_create","workflow_approval"],
+          "submenu": [
+            {
+              "url": "workflow/index",
+              "name": "Workflow List",
+              "icon": "archive",
+              "slug": "workflow.index",
+              "role" : ["super-admin","admin","user"],
+              "permission" : ["workflow_list","workflow_approval"]
+            },
+            {
+              "url": "workflow/create",
+              "name": "Workflow New",
+              "icon": "plus",
+              "slug": "workflow.create",
+              "role" : ["super-admin","admin","user"],
+              "permission" : ["workflow_create"]
+            }
+          ]
+        }
+
+      ]
+    }
+
+  ]
+}
