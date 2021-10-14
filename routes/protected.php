@@ -103,6 +103,7 @@ Route::group(['prefix' => 'workflow','middleware' => ['role:super-admin|admin|us
     Route::get('index',  [WorkflowController::class, 'index'] )->name('workflow.index');
     Route::get('list',  [WorkflowController::class, 'list'] )->name('workflow.list');
     Route::get('create',  [WorkflowController::class, 'create'] )->name('workflow.create');
+    Route::get('check',  [WorkflowController::class, 'check'] )->name('workflow.check');
     Route::post('store',  [WorkflowController::class, 'store'] )->name('workflow.store');
     Route::delete('destroy/{id}',  [WorkflowController::class, 'destroy'] )->name('workflow.destroy');
     Route::get('show/{id}',  [WorkflowController::class, 'show'] )->name('workflow.show');

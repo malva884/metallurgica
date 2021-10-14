@@ -3,9 +3,10 @@
 @section('title', 'Home')
 
 @section('content')
-    <section id="dashboard-ecommerce">
+    <section id="statistics-card">
+        <!-- Miscellaneous Charts -->
         <div class="row match-height">
-            <!-- Greetings Card starts -->
+            <!-- Bar Chart -Orders -->
             <div class="col-lg-6 col-md-12 col-sm-12">
                 <div class="card card-congratulations">
                     <div class="card-body text-center">
@@ -33,55 +34,24 @@
                     </div>
                 </div>
             </div>
-            <!-- Statistics Card -->
-            <div class="col-xl-6 col-md-6 col-12">
-                @if(Auth::user()->hasAnyPermission('workflow_approval'))
-                <div class="card card-statistics">
-                    <div class="card-header">
-                        <h4 class="card-title">Documenti Da Firmare</h4>
-                    </div>
-                    <div class="card-body statistics-body">
-                        <div class="row">
-                            <div class="col-xl-3 col-sm-6 col-12 mb-2 mb-xl-0">
-                                <div class="d-flex flex-row">
-                                    <div class="avatar bg-light-primary me-2">
-                                        <div class="avatar-content">
-                                            <i data-feather="mail" class="avatar-icon"></i>
-                                        </div>
-                                    </div>
-                                    <div class="my-auto">
-                                        <h4 class="fw-bolder mb-0">{{$commessa}}</h4>
-                                        <a href="{{route('workflow.index')}}"><p class="card-text font-small-3 mb-0">Commesse</p></a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xl-3 col-sm-6 col-12">
-                                <div class="d-flex flex-row">
-                                    <div class="avatar bg-light-info me-2">
-                                        <div class="avatar-content">
-                                            <i data-feather="mail" class="avatar-icon"></i>
-                                        </div>
-                                    </div>
-                                    <div class="my-auto">
-                                        <h4 class="fw-bolder mb-0">{{$confermeOrdeine}}</h4>
-                                        <a href="{{route('workflow.index')}}"><p class="card-text font-small-3 mb-0">Conferma Ordine</p></a>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-                @endif
-            </div>
-            <!--/ Statistics Card -->
+            <!--/ Bar Chart -->
         </div>
+        <!--/ Miscellaneous Charts -->
+
+        <!-- Stats Vertical Card -->
+        <div class="row">
+            @if(Auth::user()->hasAnyPermission('workflow_approval'))
+                <div class="col-xl-6 col-md-6 col-12">
+                @include('content/apps/_partials/dashboard-workflow-approval',['commessa'=>$commessa,'confermeOrdeine'=>$confermeOrdeine,'revisioni'=>$revisioni])
+                </div>
+            @endif
+                @if(Auth::user()->hasAnyPermission('workflow_create'))
+                    <div class="col-xl-6 col-md-6 col-12">
+                    @include('content/apps/_partials/dashboard-workflow-create',['workflowProcessing'=> $workflowProcessing,'workflowCompleted'=>$workflowCompleted])
+                    </div>
+                @endif
+        </div>
+        <!--/ Stats Vertical Card -->
     </section>
-
-
-
-
-
-
-
+    <!--/ Statistics Card section-->
 @endsection

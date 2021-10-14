@@ -12,25 +12,45 @@ class StaterkitController extends Controller
 {
   // home
   public function home(){
-      $workflow_cnfOrdine = $workflow_commessa = null;
+      $workflow_cnfOrdine = $workflow_commessa = $workflow_processing = $workflow_completed = $workflow_Revisione =  null;
      if(Auth::user()->hasAnyPermission('workflow_approval')){
          $workflow_commessa = Workflow::select('count(*) as allcount')
              ->leftJoin('workflow_users', 'workflow_users.Workflow', 'workflows.id')
              ->Where('workflow_users.user', '=', Auth::user()->id)
+             ->WhereNull('workflow_users.aprovato')
              ->Where('workflows.type', '=', 1)
              ->count();
          $workflow_cnfOrdine = Workflow::select('count(*) as allcount')
              ->leftJoin('workflow_users', 'workflow_users.Workflow', 'workflows.id')
              ->Where('workflow_users.user', '=', Auth::user()->id)
+             ->WhereNull('workflow_users.aprovato')
              ->Where('workflows.type', '=', 2)
              ->count();
+         $workflow_Revisione = Workflow::select('count(*) as allcount')
+             ->leftJoin('workflow_users', 'workflow_users.Workflow', 'workflows.id')
+             ->Where('workflow_users.user', '=', Auth::user()->id)
+             ->WhereNull('workflow_users.aprovato')
+             ->Where('workflows.type', '=', 3)
+             ->count();
      }
+
+      if(Auth::user()->hasAnyPermission('workflow_create')){
+          $workflow_processing = Workflow::select('count(*) as allcount')
+              ->Where('workflows.status', '=', 2)
+              ->count();
+          $workflow_completed = Workflow::select('count(*) as allcount')
+              ->Where('workflows.status', '=', 3)
+              ->count();
+      }
 
 
     $breadcrumbs = [
         ['link'=>"home",'name'=>"Home"], ['name'=>"Index"]
     ];
-    return view('/content/home', ['breadcrumbs' => $breadcrumbs, 'commessa' => $workflow_commessa, 'confermeOrdeine' => $workflow_cnfOrdine]);
+    return view('/content/home', ['breadcrumbs' => $breadcrumbs, 'commessa' => $workflow_commessa,
+        'confermeOrdeine' => $workflow_cnfOrdine,'revisioni'=> $workflow_Revisione ,'workflowProcessing'=>$workflow_processing,
+        'workflowCompleted' => $workflow_completed
+    ]);
   }
 
   // Layout collapsed menu

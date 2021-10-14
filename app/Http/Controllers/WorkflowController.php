@@ -71,33 +71,33 @@ class WorkflowController extends Controller
         }
 
         $totalRecordswithFilter = Workflow::select('count(*) as allcount')
-            ->Where('workflows.commessa', 'like', '%'.$commessa)
+            ->Where('workflows.commessa', 'like', '%' . $commessa)
             ->Where(function ($query) use ($status) {
-                if($status == 2)
+                if ($status == 2)
                     $query->Where('workflows.status', '=', 2);
-                if($status == 3)
+                if ($status == 3)
                     $query->Where('workflows.status', '=', 3);
-                if($status == 4)
+                if ($status == 4)
                     $query->Where('workflows.status', '=', 4);
             })
             ->count();
 
         $arr = DB::table('workflows')
             ->select('workflows.*')
-            ->Where('workflows.commessa', 'like', '%'.$commessa.'%')
+            ->Where('workflows.commessa', 'like', '%' . $commessa . '%')
             ->Where(function ($query) use ($status) {
-                if($status == 2)
+                if ($status == 2)
                     $query->Where('workflows.status', '=', 2);
-                if($status == 3)
+                if ($status == 3)
                     $query->Where('workflows.status', '=', 3);
-                if($status == 4)
+                if ($status == 4)
                     $query->Where('workflows.status', '=', 4);
             })
             ->orderBy($columnName, $columnSortOrder)
             ->get();
         $result = collect();
 
-        foreach ($arr as $data){
+        foreach ($arr as $data) {
             $temp = [
                 'id' => $data->id,
                 'status' => $data->status,
@@ -109,22 +109,22 @@ class WorkflowController extends Controller
             ];
 
             $workfloUser = WorkflowUser::select('*')
-                ->where('user','=',Auth::user()->id)
-                ->where('Workflow' ,'=',$data->id)
+                ->where('user', '=', Auth::user()->id)
+                ->where('Workflow', '=', $data->id)
                 ->first();
             $sing = 1;
-            if(!empty($workfloUser->id)){
+            if (!empty($workfloUser->id)) {
                 $sing = 2;
-                if($workfloUser->aprovato)
+                if ($workfloUser->aprovato)
                     $sing = 3;
-            }else{
+            } else {
                 $workfloUser = WorkflowUser::select('*')
-                    ->where('Workflow' ,'=',$data->id)
+                    ->where('Workflow', '=', $data->id)
                     ->get();
                 $temp['users'] = $workfloUser;
             }
             $temp['aprovato'] = $sing;
-            if(($view == 1 && $sing == 2 ) || ($view == 2 && $sing == 3 ) || $view === null)
+            if (($view == 1 && $sing == 2) || ($view == 2 && $sing == 3) || $view === null)
                 $result->push($temp);
         }
 
@@ -141,6 +141,7 @@ class WorkflowController extends Controller
                 $type = [
                     1 => ['title' => 'Commessa', 'class' => 'badge-light-dark'],
                     2 => ['title' => 'Conferma ordine', 'class' => 'badge-light-warning'],
+                    3 => ['title' => 'Revisione', 'class' => 'badge-light-danger'],
                 ];
                 $html = '<span class="badge badge-pill ' . $type[$row['type']]['class'] . '">';
                 $html .= $type[$row['type']]['title'] . '</span>';
@@ -155,28 +156,28 @@ class WorkflowController extends Controller
                 $statusObj = [
                     1 => ['title' => __('locale.Import'), 'class' => 'badge-light-secondary'],
                     2 => ['title' => __('locale.Processing'), 'class' => 'badge-light-secondary'],
-					3 => ['title' => __('locale.Completed'), 'class' => 'badge-light-primary'],
+                    3 => ['title' => __('locale.Completed'), 'class' => 'badge-light-primary'],
                     4 => ['title' => __('locale.End'), 'class' => 'badge-light-success'],
                 ];
-                $html= '<span class="badge badge-pill ' . $statusObj[$row['status']]['class'] . ' text-capitalized">';
-                $html.= $statusObj[$row['status']]['title'] . '</span>';
+                $html = '<span class="badge badge-pill ' . $statusObj[$row['status']]['class'] . ' text-capitalized">';
+                $html .= $statusObj[$row['status']]['title'] . '</span>';
 
-                return  $html;
+                return $html;
             })
             ->addColumn('aprovato', function ($row) {
-					$html = '';
-					if(!empty($row['aprovato']) && $row['aprovato'] > 1){
-                        $statusObj = [
-                            2 => ['title' => __('locale.Not Signed'), 'class' => 'badge-light-primary'],
-                            3 => ['title' => __('locale.Signed'), 'class' => 'badge-light-info'],
-                        ];
-                        $html.= '<span class="badge badge-pill '. $statusObj[$row['aprovato']]['class'] .' text-capitalized">';
-                        $html.= $statusObj[$row['aprovato']]['title'] . '</span>';
-					}
-					else{
-                        if(!empty($row['users'])) {
-                            $html .= '<div class="avatar-group">';
-                            foreach ($row['users'] as $user) {
+                $html = '';
+                if (!empty($row['aprovato']) && $row['aprovato'] > 1) {
+                    $statusObj = [
+                        2 => ['title' => __('locale.Not Signed'), 'class' => 'badge-light-primary'],
+                        3 => ['title' => __('locale.Signed'), 'class' => 'badge-light-info'],
+                    ];
+                    $html .= '<span class="badge badge-pill ' . $statusObj[$row['aprovato']]['class'] . ' text-capitalized">';
+                    $html .= $statusObj[$row['aprovato']]['title'] . '</span>';
+                } else {
+                    if (!empty($row['users'])) {
+                        $html .= '<div class="avatar-group">';
+                        foreach ($row['users'] as $user) {
+                            if (!$user['aprovato']) {
                                 $userObj = User::find($user['user']);
                                 $html .= '<div
                     data-bs-toggle="tooltip"
@@ -194,9 +195,10 @@ class WorkflowController extends Controller
                     />
                   </div>';
                             }
-                        $html.= '</div>'  ;
                         }
+                        $html .= '</div>';
                     }
+                }
 
                 return $html;
             })
@@ -225,6 +227,24 @@ class WorkflowController extends Controller
         return view('/content/apps/workflow/create', ['pageConfigs' => $pageConfigs, 'users' => $users]);
     }
 
+    public function check(Request $request)
+    {
+        $commessa = $request->commessa;
+        $type = $request->type;
+        if ($type == 2) {
+            $commessa = 'CO_'.$commessa;
+        }elseif ($type == 3){
+            $commessa = 'RV_'.$commessa;
+        }
+
+        $workflow = Workflow::select('count(*) as allcount')
+            ->where('commessa', '=', $commessa)
+            ->where('type', '=', $type)
+            ->count();
+
+        return ($workflow ? true : false);
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -237,24 +257,23 @@ class WorkflowController extends Controller
             'file' => 'required',
             'commessa' => 'required',
             'type' => 'required',
-        ], [],
-            [
-                'type' => 'Tipo',
-            ]);
+        ]);
 
         $stati = config('global.statiWorkflow');
         $file = new WorkflowFile;
         $workflow = new Workflow;
 
-
         $workflow->user_creator = Auth::id();
         $workflow->status = $stati['Started'];
-        $workflow->type = $request->type[0];
+        $workflow->type = $request->type;
         $type = '';
         $message = 'Commessa ';
         if ($workflow->type == 2) {
             $type = 'CO_';
             $message = 'Conf. D\'ordine: ';
+        }elseif ($workflow->type == 3){
+            $type = 'RV_';
+            $message = 'Revisione: ';
         }
 
         $workflow->commessa = $type . $request['commessa'];
@@ -313,10 +332,10 @@ class WorkflowController extends Controller
         $id = $request->id;
         $user = Auth::user();
         $workflow = Workflow::find($id);
+        UserNotify::read('workflow', $request->id);
         if (empty($workflow))
-            abort(404,);
+            abort(404);
 
-        UserNotify::read('workflow',$request->id);
         $workflowFile = WorkflowFile::select('*')->where('Workflow', '=', $workflow->id)->first();
         $file = URL::asset('/workflow') . '/' . $workflowFile->path;
         $workflowUser = WorkflowUser::all()
@@ -324,6 +343,7 @@ class WorkflowController extends Controller
             ->where('user', '=', $user->id)
             ->first();
 
+        $myApproved = false;
         $onlyView = false;
         $approvato = false;
         $log_create = false;
@@ -333,7 +353,7 @@ class WorkflowController extends Controller
         $stati = config('global.statiWorkflow');
 
         if ($workflowUser) {
-
+            $myApproved = true;
             if (empty($workflowUser->data_view)) {
                 $workflowUser->data_view = date('Y-m-d H:i:s');
                 $workflowUser->save();
@@ -351,7 +371,6 @@ class WorkflowController extends Controller
                     $approvato = true;
                     $dataFirma = $workflowUser->updated_at;
                 }
-
             }
 
         } else {
@@ -375,7 +394,7 @@ class WorkflowController extends Controller
 
 
         $pageConfigs = ['pageHeader' => false];
-        return view('/content.apps.workflow.show', compact('pageConfigs', 'workflow', 'file', 'user', 'approvato', 'log_create', 'dataFirma', 'start', 'onlyView', 'users'));
+        return view('/content.apps.workflow.show', compact('pageConfigs', 'workflow', 'file', 'user', 'approvato', 'log_create', 'dataFirma', 'start', 'onlyView', 'users','myApproved'));
 
     }
 
@@ -431,9 +450,9 @@ class WorkflowController extends Controller
             'workflowFile' => $workflowFile,
             'logo' => public_path('/images/logo/metallurgica.png')
         ];
-		$stati = config('global.statiWorkflow');
-		$workflow->status = $stati['End'];
-		$workflow->save();
+        $stati = config('global.statiWorkflow');
+        $workflow->status = $stati['End'];
+        $workflow->save();
         // share data to view
         //view()->share('employee',$data);
         $pdf = PDF::loadView('/content/apps/workflow/pdf/log', compact('data'));

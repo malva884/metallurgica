@@ -45,7 +45,7 @@
                             <h6 class="text-info">{{$workflow->created_at}}</h6>	
                         @elseif(!empty($approvato) && empty($log_create))
                             <h5 class="text-success">Data firma: </h5><h5 class="text-info">{{$dataFirma}}</h5>
-                         @elseif(empty($approvato) && empty($onlyView))
+                         @elseif(empty($approvato) && empty($onlyView) && !empty($myApproved))
                         <a class="btn btn-success btn-block mb-75"
                            href="javascript:void(0);"
                            id="confirm-text"
@@ -54,7 +54,9 @@
                         >
                             Approva
                         </a>
-
+                        @else
+                            <h5 class="text-primary">Workflow avviato! </h5>
+                            <h6 class="text-info">{{$workflow->created_at}}</h6>
                         @endif
                     </div>
                 </div>
