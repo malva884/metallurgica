@@ -45,10 +45,9 @@
                                     <x-SelectForm
                                             title="disabled"
                                             class="form-group"
-                                            :values="[0=>'NO',1=>'Si']"
+                                            :values="[0=>'Attivo',1=>'Disattivo']"
                                             defoult=""
                                             :required="true"
-
                                     />
 
                                 </div>

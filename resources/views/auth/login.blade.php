@@ -16,7 +16,7 @@
         <a href="javascript:void(0);" class="brand-logo">
 
           <img src="{{asset('images/logo/logo1.ico')}}" height="28">
-          <h2 class="brand-text text-primary ml-1">Metallurgica</h2>
+          <h2 class="brand-text text-primary ml-1">Portale Metallurgica</h2>
         </a>
 
         <h4 class="card-title mb-1">Benvenuto su Metallurgica! 👋</h4>

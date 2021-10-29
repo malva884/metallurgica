@@ -16,6 +16,17 @@
 @endsection
 
 @section('content')
+    @if($message = Session::get('success'))
+        <x-alert
+                :message="$message" color="success"
+        />
+        {!! Session::forget('success') !!}
+    @elseif($message = Session::get('error'))
+        <x-alert
+                :message="$message" color="danger"
+        />
+        {!! Session::forget('error') !!}
+    @endif
 <!-- users list start -->
 <section class="app-user-list">
   <!-- users filter start -->
@@ -24,8 +35,18 @@
         <div class="d-flex  align-items-center mx-50 row pt-0 pb-2">
             <div class="col-xl-6 col-md-6 col-12 mb-1">
                 <div class="form-group">
-                    <label for="basicInput">{{__('locale.Title')}}</label>
-                    <input type="text" class="form-control" id="Title" placeholder="{{__('locale.Title')}}" />
+                    <label for="basicInput">{{__('locale.Specifica Tecnica')}}</label>
+                    <input type="text" class="form-control" id="Specifica" placeholder="{{__('locale.Specifica Tecnica')}}" />
+                </div>
+            </div>
+            <div class="col-xl-6 col-md-6 col-12 mb-1">
+                <div class="form-group">
+                    <label for="basicInput">{{__('locale.View')}}</label>
+                    <select id="UserView" class="form-control text-capitalize mb-md-0 mb-2xx">
+                        <option value="1" {{((auth()->user()->hasAnyPermission(['documents_check','documents_see']) ? 'Selected':''))}}> {{__('locale.Not Signed')}} </option>
+                        <option value="2"> {{__('locale.Signed')}} </option>
+                        <option value="3" {{((auth()->user()->hasAnyPermission(['documents_create']) ? 'Selected':''))}}> {{__('locale.All')}} </option>
+                    </select>
                 </div>
             </div>
             <div class="col-xl-6 col-md-6 col-12 mb-1">
@@ -43,38 +64,40 @@
             <div class="col-xl-6 col-md-6 col-12 mb-1">
                 <div class="form-group">
                     <label for="basicInput">{{__('locale.Status')}}</label>
-                    <select id="UserStatus" class="form-control text-capitalize mb-md-0 mb-2xx">
-                        <option value=""> {{__('locale.Select status')}} </option>
-                        <option value="Active"> Active </option>
-                        <option value="Inactive"> Inactive </option>
+                    <select id="Status" class="form-control text-capitalize mb-md-0 mb-2xx">
+                        <option value="2" {{((auth()->user()->hasAnyPermission(['documents_check','documents_see']) ? 'Selected':''))}}> In Approvazione </option>
+                        <option value="3"> Completato </option>
+                        <option value="1"> Creazione </option>
+                        <option value="" {{((auth()->user()->hasAnyPermission(['documents_create']) ? 'Selected':''))}}> Tutti </option>
                     </select>
                 </div>
             </div>
         </div>
     </div>
     <!-- users filter end -->
-    <div class="d-flex justify-content-end mb-4">
-            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Export
-            </button>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item" id="exportCsv" href="#">CSV</a>
-                <a class="dropdown-item" id="exportExcel" href="#">EXCEL</a>
-                <a class="dropdown-item" id="exportPdf" href="#">PDF</a>
-            </div>
-    </div>
+
     <!-- list section start -->
     <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">Lista Specifiche</h4>
+            @if(auth()->user()->can('documents_create') || auth()->user()->hasanyrole('super-admin'))
+                <a href="{{route('document.create')}}" class="btn btn-primary">{{__('locale.Document New')}}</a>
+            @endif
+        </div>
         <div class="card-datatable table-responsive pt-0">
             <table class="dt-document table" id="dt-document">
                 <thead class="thead-light">
                 <tr>
-                    <th></th>
-                    <th>Title</th>
-                    <th>Specif. Number</th>
-                    <th>Category</th>
-                    <th>User</th>
-                    <th>Created</th>
+                    <th>Specif. Numero</th>
+                    <th>Tipo</th>
+                    <th>Catagoria</th>
+                    @if(auth()->user()->can('documents_create') || auth()->user()->hasanyrole('super-admin'))
+                        <th>Stato Workflow</th>
+                    @else
+                        <th>Creato Da</th>
+                    @endif
+                    <th>Data Creazione</th>
+                    <th>Stato</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
@@ -129,161 +152,23 @@
                   url: '{{ route('document.list') }}',
                   data: function (d) {
                       d.category =$('#Category').val();
-                      d.title =$('#Title').val();
-                      d.email =$('#UserEmail').val();
+                      d.specifica =$('#Specifica').val();
+                      d.status =$('#Status').val();
+                      d.view =$('#UserView').val();
                   }
               },
               columns: [
                   // columns according to JSON
-                  { data: 'id' },
-                  { data: 'title' },
                   { data: 'specific_number' },
+                  { data: 'document_type' },
                   { data: 'category' },
                   { data: 'user' },
                   { data: 'created_at' },
-                  { data: '' }
+                  { data: 'status' },
+                  {data: 'action', name: 'action',orderable:false,serachable:false, sClass:'text-center'},
               ],
-              columnDefs: [
-                  {
-                      // For Responsive
-                      className: 'control',
-                      orderable: false,
-                      responsivePriority: 2,
-                      targets: 0
-                  },
-                  {
-                      // User Status
-                      targets: 4,
-                      render: function (data, type, full, meta) {
+              order: [[4, 'desc']],
 
-                          var $user = full['firstname']+' '+full['lastname'];
-
-                          return $user
-                      }
-                  },
-
-/*
-                  {
-                    // User Status
-                    targets: 4,
-                    render: function (data, type, full, meta) {
-                        console.log(full);
-                      var $status = full['status'];
-
-                      return (
-                          '<span class="badge badge-pill ' +
-                          statusObj[$status].class +
-                          '" text-capitalized>' +
-                          statusObj[$status].title +
-                          '</span>'
-                      );
-                    }
-                  },
-                  */
-                  {
-                      // User Status
-                      targets: -2,
-                      render: function (data, type, full, meta) {
-                          var d = new Date(full['created_at']);
-                        //  var month = ['01', '02', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                          var date = d.getDate() + "-" + d.getMonth() + "-" + d.getFullYear();
-                          return date
-                      }
-                  },
-
-                  {
-                      // Actions
-                      targets: -1,
-                      title: 'Actions',
-                      orderable: false,
-                      render: function (data, type, full, meta) {
-                          return (
-                              '<div class="btn-group">' +
-                              '<a class="btn btn-sm dropdown-toggle hide-arrow" data-toggle="dropdown">' +
-                              feather.icons['more-vertical'].toSvg({ class: 'font-small-4' }) +
-                              '</a>' +
-                              '<div class="dropdown-menu dropdown-menu-right">' +
-                              '<a href="' +
-                              documentView + '/' + full['id'] +
-                              '" class="dropdown-item">' +
-                              feather.icons['file-text'].toSvg({ class: 'font-small-4 mr-50' }) +
-                              'Details</a>' +
-                              '<a href="' +
-                              documentEdit + '/' + full['id'] +
-                              '" class="dropdown-item">' +
-                              feather.icons['edit'].toSvg({ class: 'font-small-4 mr-50' }) +
-                              'Edit</a>' +
-                              '<div class="dropdown-menu dropdown-menu-right">' +
-                              '<a href="' +
-                              documentClone + '/' + full['id'] +
-                              '" class="dropdown-item">' +
-                              feather.icons['copy'].toSvg({ class: 'font-small-4 mr-50' }) +
-                              'Clone</a>' +
-                              '<a href="javascript:;" class="dropdown-item delete-record">' +
-                              feather.icons['trash-2'].toSvg({ class: 'font-small-4 mr-50' }) +
-                              'Delete</a></div>' +
-                              '</div>' +
-                              '</div>'
-                          );
-                      }
-                  }
-              ],
-              order: [[1, 'asc']],
-              dom:
-                  '<"d-flex justify-content-between align-items-center header-actions mx-1 row mt-75"' +
-                  '<"col-lg-12 col-xl-6" l>' +
-                  '<"col-lg-12 col-xl-6 pl-xl-75 pl-0"<"dt-action-buttons text-xl-right text-lg-left text-md-right text-left d-flex align-items-center justify-content-lg-end align-items-center flex-sm-nowrap flex-wrap mr-1"<"mr-1"f>B>>' +
-                  '>t' +
-                  '<"d-flex justify-content-between mx-2 row mb-1"' +
-                  '<"col-sm-12 col-md-6"i>' +
-                  '<"col-sm-12 col-md-6"p>' +
-                  '>',
-
-              // Buttons with Dropdown
-              buttons: [
-                  {
-                      text: '{{__('locale.Add New Document')}}',
-                      className: 'add-new btn btn-primary mt-50',
-                      action: function ( e, dt, button, config ) {
-                          window.location = '/document/create';
-                      },
-                      init: function (api, node, config) {
-                          $(node).removeClass('btn-secondary');
-                      }
-                  },
-              ],
-              // For responsive popup
-              responsive: {
-                  details: {
-                      display: $.fn.dataTable.Responsive.display.modal({
-                          header: function (row) {
-                              var data = row.data();
-                              return 'Details of ' + data['title'];
-                          }
-                      }),
-                      type: 'column',
-                      renderer: $.fn.dataTable.Responsive.renderer.tableAll({
-                          tableClass: 'table',
-                          columnDefs: [
-                              {
-                                  targets: 2,
-                                  visible: false
-                              },
-                              {
-                                  targets: 3,
-                                  visible: false
-                              }
-                          ]
-                      })
-                  }
-              },
-              language: {
-                  paginate: {
-                      // remove previous & next text from pagination
-                      previous: '&nbsp;',
-                      next: '&nbsp;'
-                  }
-              },
           });
       }
 
@@ -291,76 +176,41 @@
       $('#Category').change(function(){
           $('#dt-document').DataTable().draw(true);
       });
-      $('#UserEmail').change(function(){
+      $('#Status').change(function(){
           $('#dt-document').DataTable().draw(true);
       });
-      $('#Title').change(function(){
+      $('#Specifica').change(function(){
+          $('#dt-document').DataTable().draw(true);
+      });
+      $('#UserView').change(function(){
           $('#dt-document').DataTable().draw(true);
       });
 
-      $(document).ready(function () {
-          $('#exportCsv').click(function () {
-              $.ajax({
-                  url: "{{route('users.export')}}",
-                  type: "post",
-                  headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                  data:{
-                      'role':  $('#UserRole').val(),
-                      'status': $('#UserStatus').val(),
-                      'username': $('#UserUsername').val(),
-                      'email': $('#UserEmail').val(),
-                      'type': 'csv'
-                  },
-                  success:function(data){
-                      window.location.href = '/exports/'+data+'_users.csv';
-                  }
-              })
-          });
-          $('#exportExcel').click(function () {
-              $.ajax({
-                  url: "{{route('users.export')}}",
-                  type: "post",
-                  headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                  data:{
-                      'role':  $('#UserRole').val(),
-                      'status': $('#UserStatus').val(),
-                      'username': $('#UserUsername').val(),
-                      'email': $('#UserEmail').val(),
-                      'type': 'xlsx'
-                  },
-                  success:function(data){
-                      window.location.href = '/exports/'+data+'_users.xlsx';
-                  }
-              })
-          })
 
-          $('#exportPdf').click(function () {
-              $.ajax({
-                  url: "{{route('users.export.pdf')}}",
-                  type: "post",
-                  headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                  data:{
-                      'role':  $('#UserRole').val(),
-                      'status': $('#UserStatus').val(),
-                      'username': $('#UserUsername').val(),
-                      'email': $('#UserEmail').val(),
-                      'type': 'pdf'
-                  },
-                  xhrFields: {
-                      responseType: 'blob'
-                  },
-                  success: function(response){
-                      var blob = new Blob([response]);
-                      var link = document.createElement('a');
-                      link.href = window.URL.createObjectURL(blob);
-                      link.download = "Users.pdf";
-                      link.click();
-                  },
-                  error: function(blob){
-                      console.log(blob);
-                  }
-              })
-          })
+      // Delete product Ajax request.
+      var deleteID;
+      $('body').on('click', '#getDeleteId', function () {
+          deleteID = $(this).data('id');
       })
+      $('#SubmitDeleteProductForm').click(function (e) {
+          e.preventDefault();
+          var id = deleteID;
+          $.ajaxSetup({
+              headers: {
+                  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+              }
+          });
+          $.ajax({
+              url: "destroy/" + id,
+              method: 'DELETE',
+              success: function (result) {
+                  $('.user-list-table').DataTable().ajax.reload();
+                  $('#DeleteProductModal').hide();
+                  $('body').removeClass('modal-open');
+                  $('.modal-backdrop').remove();
+              }
+          });
+      });
+
   </script>
 @endsection

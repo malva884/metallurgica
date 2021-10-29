@@ -12,6 +12,6 @@ class Document extends Model
 
 
     protected $fillable = [
-        'id','document_father','title','user','user_edit','specific_number','created_at'
+        'id','document_father','title','user','user_edit','specific_number','status','created_at'
     ];
 }

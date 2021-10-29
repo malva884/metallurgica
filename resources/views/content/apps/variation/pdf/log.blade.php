@@ -134,9 +134,9 @@
                             </td>
 
                             <td>
-                                Commessa: {{$data['workflow']->commessa}}<br>
+                                Ol: {{$data['workflow']->ol}}<br>
                                 Data Crezione: {{date_format($data['workflow']->created_at,'d/m/Y')}}<br>
-                                File: {{explode("/",$data['workflowFile']->path)[1]}}
+                                File: {{$data['workflowFile']->nomeFile}}
                             </td>
                         </tr>
                     </table>

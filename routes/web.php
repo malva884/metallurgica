@@ -16,15 +16,16 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Auth::routes();
-Auth::routes(['verify' => true]);
+//Auth::routes();
+Auth::routes(['verify' => true, 'register' => false]);
+//Auth::routes(['verify' => true]);
 
 // locale Route
 Route::get('lang/{locale}', [LanguageController::class, 'swap']);
 
 
 
-Route::get('/clear-cache', function() {
+Route::get('/clear', function() {
     $exitCode = Artisan::call('cache:clear');
     $exitCode = Artisan::call('config:cache');
     return 'DONE'; //Return anything

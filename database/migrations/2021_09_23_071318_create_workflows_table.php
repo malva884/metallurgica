@@ -18,6 +18,7 @@ class CreateWorkflowsTable extends Migration
             $table->integer('status');
             $table->integer('user_creator');
             $table->string('commessa');
+			$table->dateTime('end_date')->nullable();
             $table->integer('type');
             $table->timestamps();
         });

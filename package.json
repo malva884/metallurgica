@@ -34,6 +34,7 @@
     "quill-image-uploader": "^1.2.2",
     "quill-table": "^1.0.0",
     "quill-table-ui": "^1.0.7",
-    "tinymce": "^5.8.2"
+    "tinymce": "^5.8.2",
+    "yarn": "^1.22.15"
   }
 }

@@ -14,8 +14,9 @@ class CreateDocumentStructuresTable extends Migration
     public function up()
     {
         Schema::create('document_structures', function (Blueprint $table) {
-            $table->increments('id');
+            $table->uuid('id')->primary();
             $table->string('document');
+            $table->foreign('document')->references('id')->on('documents');
             $table->string('document_father')->nullable();
             $table->dateTime('document_date');
             $table->string('document_type');

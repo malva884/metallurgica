@@ -1,6 +1,6 @@
 @extends('layouts/contentLayoutMaster')
 
-@section('title', 'Invoice Edit')
+@section('title', 'Revisione Specifica Tecnica')
 
 @section('vendor-style')
   <link rel="stylesheet" href="{{asset('vendors/css/pickers/flatpickr/flatpickr.min.css')}}">
@@ -31,16 +31,15 @@
   <section class="invoice-add-wrapper">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <div class="row invoice-add">
-
+      <div class="col-xl-3 col-md-4 col-12 invoice-actions mt-md-0 mt-2"></div>
       <!-- Invoice Add Left starts -->
-      <div class="col-xl-9 col-md-8 col-12">
+      <div class="col-xl-6 col-md-6 col-12">
         <div class="documents">
           <?php $n = 1; ?>
           @foreach($pages as $page)
 
             <div class="card invoice-preview-card origin" id="editor_{{$n}}">
               <!-- Header starts -->
-              <button type="button" class="swal2-close" aria-label="Close this dialog" style="display: flex;" onClick="removeElement({{$n}})">×</button>
               <div class="card-body invoice-padding  pb-0">
                 <div class="d-flex justify-content-between flex-md-row flex-column invoice-spacing mt-0">
                   <div class="table-responsive">
@@ -49,12 +48,11 @@
                         <img
                                 class="img-fluid rounded"
                                 src="{{asset('/images/logo/stl.png')}}"
-                                height="104"
-                                width="104"
-                                alt="User avatar"
+                                height="60"
+                                width="60"
                         />
-                        <p class="font-weight-bolder" style="display: inline; font-size: 45px;">
-                          &nbsp;&nbsp;Metallutgica Bresciana S.p.a.</p>
+                        <p class="font-weight-bolder mt-0 py-0" style="font-family:'Palace Script MT', sans-serif; font-weight: bold; display: inline; font-size: 50px;">
+                          &nbsp;&nbsp;Metallutgica Bresciana s.p.a.</p>
                       </div>
                     </div>
 
@@ -75,13 +73,12 @@
                         </td>
                         <td>
                           <div class="form-group row">
-                            <label for="colFormLabel" class="col-sm-5 col-form-label">Specification
+                            <div class="col-sm-5">
+                            <label for="colFormLabel">Specification
                               N°</label>
+                            </div>
                             <div class="col-sm-6">
-                              <input type="text" class="form-control" id="specific_number"
-                                     name="specific_number"
-                                     class="form-control " placeholder="Specification n°"
-                                     value="{{$document->specific_number}}"/>
+                              <span style="font-size: 15px; text-align:left">{{$document->specific_number}}</span>
                             </div>
                           </div>
                         </td>
@@ -93,7 +90,6 @@
               </div>
               <!-- Header ends -->
 
-              <hr class="invoice-spacing"/>
 
               <div class="row">
                 <div class="col-sm-11" style="display: inline;margin-left: 5%;">
@@ -120,9 +116,12 @@
       <!-- Invoice Add Right starts -->
       <div class="col-xl-3 col-md-4 col-12">
         <div class="mt-2">
-          <p class="mb-50">Title Document</p>
-          <input type="text" class="form-control" id="title" placeholder="Title Document"
-                 value="{{$document->title}}"/>
+          <p class="mb-50">Specifica</p>
+          <input type="text" class="form-control" id="specific_number"
+                 name="specific_number"
+                 class="form-control " placeholder="Specification n°"
+                 value="{{$document->specific_number}} (Revision)"/>
+
         </div>
         <div class="mt-2">
           <p class="mb-50">Category</p>
@@ -182,59 +181,53 @@
   <script src="https://unpkg.com/quill-image-uploader@1.2.1/dist/quill.imageUploader.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/2.0.0-dev.3/quill.min.js" type="text/javascript"></script>
   <script src="https://unpkg.com/quill-table-ui@1.0.5/dist/umd/index.js" type="text/javascript"></script>
-  <script src='https://cdn.tiny.cloud/1/iz5jhht1zz14maaaym5s91tzkrblfwf3i1knz9xkglxf31nz/tinymce/5/tinymce.min.js' referrerpolicy="origin"> </script>
+  <script src='https://cdn.tiny.cloud/1/14jzepvheitbqnd4u1a9qnq46m27xpn657dfpegsn5cvt5co/tinymce/5/tinymce.min.js' referrerpolicy="origin"> </script>
 
   <script>
     var total_page = parseInt($('#page_n').val());
     $('#btn-add-new').click(function (total_page) {
       var pages = parseInt($('#page_n').val()) + 1;
       $('.documents').append(
-              '<div class="card invoice-preview-card origin" id="editor_'+ pages +'">' +
-              '<button type="button" class="swal2-close" aria-label="Close this dialog" style="display: flex;" onClick="removeElement('+pages+')">×</button>'+
-              '<div class="card-body invoice-padding  pb-0">' +
-              '<div class="d-flex justify-content-between flex-md-row flex-column invoice-spacing mt-0"><div>' +
-              '<div class="table-responsive"' +
-              '<div class="row" >' +
-              '<div class="col-12" style="text-align: center">' +
-              '<img class="img-fluid rounded" src="{{asset('/images/logo/stl.png')}}" height="104" width="104" alt="User avatar">' +
-              '<p class="font-weight-bolder" style="display: inline; font-size: 45px;">' +
-              '&nbsp;&nbsp;Metallutgica Bresciana S.p.a.</p>' +
-              '</div></div>' +
-              '<table class="table table-bordered" style="width: 1160px; ">' +
-              '<tbody><tr><td>' +
-              '<div class="form-group row">' +
-              '<label for="colFormLabel" class="col-sm-12 col-form-label">s.p.aTechnical Dept.</label>' +
-              '</div>' +
-              '</td><td>' +
-              '<div class="form-group row">' +
-              '<label for="colFormLabel" class="col-sm-12 col-form-label">TECHNICAL DATA SHEET</label>' +
-              '</div>' +
-              '</td><td>' +
-              '<div class="form-group row">' +
-              '<label for="colFormLabel" class="col-sm-5 col-form-label">Specification N°</label>' +
-              '<div class="col-sm-6">' +
-              '<span>' + $('#specific_number').val() + '</span>' +
-              '</div>' +
-              '</div>' +
-              '</td></tr></tbody></div></table></div></div></div>' +
-              '<hr class="invoice-spacing"/>' +
-              '<div class="row">' +
-              '<div class="col-sm-11" style="display: inline;margin-left: 5%;">' +
+              '<div class="card invoice-preview-card origin">'+
+              '<div class="card-body invoice-padding  pb-0">'+
+              '<div class="d-flex justify-content-between flex-md-row flex-column invoice-spacing mt-0"><div>'+
+              '<div class="table-responsive"'+
+              '<div class="row" >'+
+              '<div class="col-12" style="text-align: center">'+
+              '<img class="img-fluid rounded" src="{{asset('/images/logo/stl.png')}}" height="60" width="60" alt="User avatar">'+
+              '<p class="font-weight-bolder" style=" font-family: Palace Script MT , sans-serif; display: inline; font-size: 50px;">' +
+              '&nbsp;Metallutgica Bresciana s.p.a.</p>'+
+              '</div></div>'+
+              '<table class="table table-bordered" style="width: 850px; ">'+
+              '<tbody><tr><td>'+
+              '<div class="form-group row">'+
+              '<label for="colFormLabel" class="col-sm-12 col-form-label">s.p.aTechnical Dept.</label>'+
+              '</div>'+
+              '</td><td>'+
+              '<div class="form-group row">'+
+              '<label for="colFormLabel" class="col-sm-12 col-form-label">TECHNICAL DATA SHEET</label>'+
+              '</div>'+
+              '</td><td>'+
+              '<div class="form-group row">'+
+              '<label for="colFormLabel" class="col-sm-5 col-form-label">Specification N°</label>'+
+              '<div class="col-sm-6">'+
+              '<span id="num_specifica"></span>'+
+              '</div>'+
+              '</div>'+
+              '</td></tr></tbody></div></table></div></div></div>'+
+              '<div class="row">'+
+              '<div class="col-sm-11" style="display: inline;margin-left: 5%;">'+
               '<textarea id="document_page_'+pages+'"></textarea>'+
-              '</div>' +
-              '<hr class="invoice-spacing mt-0"/>' +
-              '<div class="card-body invoice-padding py-0">' +
-              '<div class="row">' +
+              '</div>'+
+              '<hr class="invoice-spacing mt-0"/>'+
+              '<div class="card-body invoice-padding py-0">'+
+              '<div class="row">'+
               '<div class="col-12"></div></div></div></div>'
       );
       $('#page_n').val(pages);
+      create_tiny(pages);
 
-      console.log(pages +' '+ total_page);
-      if(pages > total_page){
 
-        create_tiny(pages);
-      }else
-        alert(this.total_page);
 
 
 
@@ -244,7 +237,7 @@
       for (let i = 1; i <= parseInt($('#page_n').val()); i++) {
         tinymce.init({
           selector: 'textarea#document_page_'+i,
-          height: 1050,
+          height: {{$height_page}},
           relative_urls : false,
           remove_script_host : false,
           convert_urls : true,
@@ -336,7 +329,7 @@
     function create_tiny(pages){
       tinymce.init({
         selector: 'textarea#document_page_'+pages,
-        height: 1050,
+        height: {{$height_page}},
         relative_urls : false,
         remove_script_host : false,
         convert_urls : true,
@@ -438,13 +431,13 @@
         i++;
       }
       $.ajax({
-        type: "POST",
         url: '{{route('document.store')}}',
+        type: "POST",
         data: {
           "editors": editor_value,
           "specification": $('#specific_number').val(),
           "category": $('#category').val(),
-          "title": $('#title').val(),
+          "father": "{{app('request')->id}}",
           'pages': n,
           "_token": "{{ csrf_token() }}"
         },
@@ -471,14 +464,20 @@
 
   </script>
   <style>
-    .ql-editor {
-      height: 950px;
-      max-height: 950px;
-      min-height:950px;
-    }
-
     .table-responsive {
       display: table;
+    }
+
+    .table tbody tr td {
+      font-size: 8px;
+      border: ridge #000 1px !important;
+    }
+
+    th {
+      font-family: "Trebuchet MS", Arial, Verdana;
+      font-size: 8px !important;
+      padding: 5px;
+      border: ridge #000 1px !important;
     }
   </style>
 @endsection

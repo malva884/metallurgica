@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Barryvdh\DomPDF\Facade as PDF;
 use Yajra\DataTables\DataTables;
@@ -284,17 +285,17 @@ class WorkflowController extends Controller
             $nameFile = $type . request()->file->getClientOriginalName();
         }
 
-        if (file_exists(public_path('workflow/' . $request['commessa']) . $nameFile)) {
+        if (file_exists(public_path('workflow/' . $workflow->commessa) . $nameFile)) {
             $nameFile = date('YmdHis') . $nameFile;
         } else {
-            $path = public_path('workflow/' . $request['commessa']);
+            $path = public_path('workflow/' . $workflow->commessa);
             if (!File::isDirectory($path))
                 File::makeDirectory($path, 0777, true, true);
         }
 
         // $nameFile = $nameFile . '.' . request()->file->extension();
-        request()->file->move(public_path('workflow/' . $request['commessa']), $nameFile);
-        $file->path = $request['commessa'] . '/' . $nameFile;
+        request()->file->move(public_path('workflow/' . $workflow->commessa), $nameFile);
+        $file->path_local = $workflow->commessa . '/' . $nameFile;
         $file->user = Auth::id();
         $workflow->save();
         $file->Workflow = $workflow->id;
@@ -320,6 +321,8 @@ class WorkflowController extends Controller
             ->with('success', __('locale.Created Workflow'));
     }
 
+
+
     /**
      * Display the specified resource.
      *
@@ -337,7 +340,10 @@ class WorkflowController extends Controller
             abort(404);
 
         $workflowFile = WorkflowFile::select('*')->where('Workflow', '=', $workflow->id)->first();
-        $file = URL::asset('/workflow') . '/' . $workflowFile->path;
+        if($workflowFile->path_drive)
+            $file = 'https://drive.google.com/file/d/'. $workflowFile->path_drive.'/preview';
+        else
+            $file = URL::asset('/workflow') . '/' . $workflowFile->path_local;
         $workflowUser = WorkflowUser::all()
             ->where('Workflow', '=', $workflow->id)
             ->where('user', '=', $user->id)
@@ -360,8 +366,7 @@ class WorkflowController extends Controller
             }
 
             if (($user->id == $workflow->user_creator && $user->hasAnyPermission('workflow_create')) || $user->hasAnyPermission('workflow_create')) {
-                if ($workflow->status === $stati['End']) {
-
+                if ($workflow->status === $stati['Approved'] || $workflow->status === $stati['End']) {
                     $log_create = true;
                 } elseif ($workflowUser->aprovato) {
                     $start = true;
@@ -371,11 +376,12 @@ class WorkflowController extends Controller
                     $approvato = true;
                     $dataFirma = $workflowUser->updated_at;
                 }
+
             }
 
         } else {
             if ($user->hasAnyPermission('workflow_create')) {
-                if ($workflow->status === $stati['End']) {
+                if ($workflow->status === $stati['Approved'] || $workflow->status === $stati['End']) {
                     $log_create = true;
                 } else
                     $start = true;
@@ -394,7 +400,7 @@ class WorkflowController extends Controller
 
 
         $pageConfigs = ['pageHeader' => false];
-        return view('/content.apps.workflow.show', compact('pageConfigs', 'workflow', 'file', 'user', 'approvato', 'log_create', 'dataFirma', 'start', 'onlyView', 'users','myApproved'));
+        return view('/content.apps.workflow.show', compact('pageConfigs', 'workflow', 'file', 'user', 'approvato', 'log_create', 'dataFirma', 'start', 'onlyView', 'users','myApproved','workflowFile'));
 
     }
 
@@ -444,15 +450,19 @@ class WorkflowController extends Controller
             ->where('workflow_users.Workflow', '=', $request->id)->get();
 
         $workflowFile = WorkflowFile::select('*')->where('Workflow', '=', $request->id)->first();
+
+        $stati = config('global.statiWorkflow');
+         if($workflow->status != $stati['End']){
+            $workflow->status = $stati['End'];
+            $workflow->end_date = date('Y-m-d');
+            $workflow->save();
+        }
         $data = [
             'workflow' => $workflow,
             'workflowUsers' => $workflowUsers,
             'workflowFile' => $workflowFile,
             'logo' => public_path('/images/logo/metallurgica.png')
         ];
-        $stati = config('global.statiWorkflow');
-        $workflow->status = $stati['End'];
-        $workflow->save();
         // share data to view
         //view()->share('employee',$data);
         $pdf = PDF::loadView('/content/apps/workflow/pdf/log', compact('data'));
@@ -468,9 +478,16 @@ class WorkflowController extends Controller
      * @param \App\Models\Workflow $workflow
      * @return \Illuminate\Http\Response
      */
-    public function edit(Workflow $workflow)
+    public function edit(Request $request)
     {
-        //
+        if(empty($request->id))
+            abort(404);
+
+        $workflow = Workflow::find($request->id);
+        $file = WorkflowFile::all()->where('Workflow','=',$request->id)->first();
+         $pageConfigs = ['pageHeader' => false];
+        $users = User::permission('workflow_approval')->get();
+        return view('/content/apps/workflow/edit', ['pageConfigs' => $pageConfigs, 'workflow' => $workflow,'file'=>$file]);
     }
 
     /**
@@ -482,7 +499,31 @@ class WorkflowController extends Controller
      */
     public function update(Request $request, Workflow $workflow)
     {
-        //
+        if(empty($request->id))
+            abort(404);
+
+        $file = WorkflowFile::all()->where('Workflow','=',$request->id)->first();
+        if($file){
+            if(!empty($request['file'])){
+                $rqt_id = explode('id=',$request['file']);
+                if(!empty($rqt_id[1])){
+                    $id_file = explode('&',$rqt_id[1]);
+                    $file->path_drive = $id_file[0];
+                }
+            }
+            $rqt_id_folder = explode('/',$request['folder']);
+            $file->path_folder_drive = $rqt_id_folder[count($rqt_id_folder)-1];
+            $file->save();
+            if($file->path_drive){
+                $path = public_path('workflow/' . $request['commessa']);
+                if (\File::exists($path))
+                    \File::deleteDirectory($path);
+            }
+
+        }
+
+        return redirect()->route('workflow.show',['id'=> $request->id])
+            ->with('success', __('locale.Edit Workflow'));
     }
 
     /**

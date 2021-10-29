@@ -1,6 +1,6 @@
 @extends('layouts/contentLayoutMaster')
 
-@section('title', 'Invoice Edit')
+@section('title', 'Nuova Specifica Tecnica')
 
 @section('vendor-style')
   <link rel="stylesheet" href="{{asset('vendors/css/pickers/flatpickr/flatpickr.min.css')}}">
@@ -30,8 +30,9 @@
 @section('content')
   <section class="invoice-add-wrapper">
     <div class="row invoice-add">
+      <div class="col-xl-3 col-md-4 col-12 invoice-actions mt-md-0 mt-2"></div>
       <!-- Invoice Add Left starts -->
-      <div class="col-xl-9 col-md-8 col-12">
+      <div class="col-xl-6 col-md-6 col-12">
         <div class="documents">
           <div class="card invoice-preview-card origin">
             <!-- Header starts -->
@@ -43,12 +44,11 @@
                       <img
                               class="img-fluid rounded"
                               src="{{asset('/images/logo/stl.png')}}"
-                              height="104"
-                              width="104"
-                              alt="User avatar"
+                              height="60"
+                              width="60"
                       />
-                      <p class="font-weight-bolder" style="display: inline; font-size: 45px;">
-                        &nbsp;&nbsp;Metallutgica Bresciana S.p.a.</p>
+                      <p class="font-weight-bolder mt-0 py-0" style="font-family:'Palace Script MT', sans-serif; font-weight: bold; display: inline; font-size: 50px;">
+                        &nbsp;Metallutgica Bresciana s.p.a.</p>
                     </div>
                   </div>
 
@@ -57,20 +57,22 @@
                     <tr>
                       <td>
                         <div class="form-group row">
-                          <label for="colFormLabel" class="col-sm-12 col-form-label">s.p.aTechnical Dept.</label>
+                          <label for="colFormLabel" class="col-sm-12 col-form-label">Technical
+                            Dept.</label>
                         </div>
                       </td>
                       <td>
                         <div class="form-group row">
-                          <label for="colFormLabel" class="col-sm-12 col-form-label">TECHNICAL DATA SHEET</label>
+                          <label for="colFormLabel" class="col-sm-12 col-form-label">TECHNICAL
+                            DATA SHEET</label>
                         </div>
                       </td>
                       <td>
                         <div class="form-group row">
-                          <label for="colFormLabel" class="col-sm-5 col-form-label">Specification N°</label>
+                          <label for="colFormLabel" class="col-sm-5 col-form-label">Specification
+                            N°</label>
                           <div class="col-sm-6">
-                            <input type="text" class="form-control" id="specific_number" name="specific_number"
-                                   class="form-control " placeholder="Specification n°"/>
+                            <span ></span>
                           </div>
                         </div>
                       </td>
@@ -82,10 +84,9 @@
             </div>
             <!-- Header ends -->
 
-            <hr class="invoice-spacing"/>
 
             <div class="row">
-              <div class="col-sm-11" style="display: inline;margin-left: 5%;">
+              <div class="col-sm-11" style="display: inline;margin-left: 5%; position: center;">
                 <form enctype="multipart/form-data">
                   <textarea id="document_page_1" ></textarea>
                 </form>
@@ -110,8 +111,11 @@
       <!-- Invoice Add Right starts -->
       <div class="col-xl-3 col-md-4 col-12">
         <div class="mt-2">
-          <p class="mb-50">Title Document</p>
-          <input type="text" class="form-control" id="title" placeholder="Title Document"/>
+          <p class="mb-50">Specifica</p>
+          <input type="text" class="form-control" id="specific_number"
+                 name="specific_number"
+                 class="form-control " placeholder="Specification n°"
+          />
         </div>
         <div class="mt-2">
           <p class="mb-50">Category</p>
@@ -163,16 +167,21 @@
   <script src="https://unpkg.com/quill-image-uploader@1.2.1/dist/quill.imageUploader.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/2.0.0-dev.3/quill.min.js" type="text/javascript"></script>
   <script src="https://unpkg.com/quill-table-ui@1.0.5/dist/umd/index.js" type="text/javascript"></script>
-  <script src='https://cdn.tiny.cloud/1/iz5jhht1zz14maaaym5s91tzkrblfwf3i1knz9xkglxf31nz/tinymce/5/tinymce.min.js' referrerpolicy="origin">
+  <script src='https://cdn.tiny.cloud/1/14jzepvheitbqnd4u1a9qnq46m27xpn657dfpegsn5cvt5co/tinymce/5/tinymce.min.js' referrerpolicy="origin">
   </script>
   <script>
+    $('#specific_number').change(function(){
 
+      $('#num_specifica').text($('#specific_number').val());
+    });
     tinymce.init({
       selector: 'textarea#document_page_1',
-      height: 1050,
+      height: {{$height_page}},
+
       relative_urls : false,
       remove_script_host : false,
       convert_urls : true,
+
       plugins: [
         'advlist autolink lists link image charmap anchor',
         'searchreplace visualblocks code fullscreen',
@@ -192,10 +201,10 @@
               'img.right { float: right; } ' +
               'table.right { float: right; } ' +
               '.center { text-align: center; } ' +
-              'img.center { display: block; margin: 0 auto; } ' +
+              //'img.center { display: block; margin: 0 auto; } ' +
               'table.center { display: block; margin: 0 auto; } ' +
               '.full { text-align: justify; } ' +
-              'img.full { display: block; margin: 0 auto; } ' +
+              //'img.full { display: block; margin: 0 auto; } ' +
               'table.full { display: block; margin: 0 auto; } ' +
               '.bold { font-weight: bold; } ' +
               '.italic { font-style: italic; } ' +
@@ -204,6 +213,10 @@
               'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }' +
               '.tablerow1 { background-color: #D3D3D3; }',
       formats: {
+        alignleft: { selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img,audio,video', classes: 'left' },
+        aligncenter: { selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img,audio,video', classes: 'center' },
+        alignright: { selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img,audio,video', classes: 'right' },
+        alignfull: { selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img,audio,video', classes: 'full' },
 
         bold: { inline: 'span', classes: 'bold' },
         italic: { inline: 'span', classes: 'italic' },
@@ -270,11 +283,11 @@
               '<div class="table-responsive"'+
               '<div class="row" >'+
               '<div class="col-12" style="text-align: center">'+
-              '<img class="img-fluid rounded" src="{{asset('/images/logo/stl.png')}}" height="104" width="104" alt="User avatar">'+
-              '<p class="font-weight-bolder" style="display: inline; font-size: 45px;">'+
-              '&nbsp;&nbsp;Metallutgica Bresciana S.p.a.</p>'+
+              '<img class="img-fluid rounded" src="{{asset('/images/logo/stl.png')}}" height="60" width="60" alt="User avatar">'+
+              '<p class="font-weight-bolder" style=" font-family: Palace Script MT , sans-serif; display: inline; font-size: 50px;">' +
+              '&nbsp;Metallutgica Bresciana s.p.a.</p>'+
               '</div></div>'+
-              '<table class="table table-bordered" style="width: 1160px; ">'+
+              '<table class="table table-bordered" style="width: 850px; ">'+
               '<tbody><tr><td>'+
               '<div class="form-group row">'+
               '<label for="colFormLabel" class="col-sm-12 col-form-label">s.p.aTechnical Dept.</label>'+
@@ -287,11 +300,10 @@
               '<div class="form-group row">'+
               '<label for="colFormLabel" class="col-sm-5 col-form-label">Specification N°</label>'+
               '<div class="col-sm-6">'+
-              '<span>'+$('#specific_number').val()+'</span>'+
+              '<span id="num_specifica"></span>'+
               '</div>'+
               '</div>'+
               '</td></tr></tbody></div></table></div></div></div>'+
-              '<hr class="invoice-spacing"/>'+
               '<div class="row">'+
               '<div class="col-sm-11" style="display: inline;margin-left: 5%;">'+
               '<textarea id="document_page_'+pages+'"></textarea>'+
@@ -304,7 +316,7 @@
       $('#page_n').val(pages);
       tinymce.init({
         selector: 'textarea#document_page_'+pages,
-        height: 1050,
+        height: {{$height_page}},
         relative_urls : false,
         remove_script_host : false,
         convert_urls : true,
@@ -327,10 +339,10 @@
                 'img.right { float: right; } ' +
                 'table.right { float: right; } ' +
                 '.center { text-align: center; } ' +
-                'img.center { display: block; margin: 0 auto; } ' +
+                //'img.center { display: block; margin: 0 auto; } ' +
                 'table.center { display: block; margin: 0 auto; } ' +
                 '.full { text-align: justify; } ' +
-                'img.full { display: block; margin: 0 auto; } ' +
+                //'img.full { display: block; margin: 0 auto; } ' +
                 'table.full { display: block; margin: 0 auto; } ' +
                 '.bold { font-weight: bold; } ' +
                 '.italic { font-style: italic; } ' +
@@ -415,14 +427,12 @@
           "editors": editor_value,
           "specification" : $('#specific_number').val(),
           "category" : $('#category').val(),
-          "title" : $('#title').val(),
           'pages' : n,
           "_token": "{{ csrf_token() }}"
         },
 
         success: function(data)
         {
-          alert(data);
           window.location = "show/"+data;
         }
       });
@@ -432,14 +442,22 @@
 
   </script>
   <style>
-    .ql-editor {
-      height: 950px;
-      max-height: 950px;
-      min-height:950px;
-    }
+
 
     .table-responsive {
       display: table;
+    }
+
+    .table tbody tr td {
+      font-size: 8px;
+      border: ridge #000 1px !important;
+    }
+
+    th {
+      font-family: "Trebuchet MS", Arial, Verdana;
+      font-size: 8px !important;
+      padding: 5px;
+      border: ridge #000 1px !important;
     }
   </style>
 @endsection

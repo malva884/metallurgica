@@ -48,32 +48,8 @@
               "permission" : ["*"]
             }
           ]
-        },
-        {
-          "name": "Categories Workflow",
-          "icon": "list",
-          "slug": "",
-          "role" : ["super-admin"],
-          "permission" : ["*"],
-          "submenu": [
-            {
-              "url": "category/index",
-              "name": "Category List",
-              "icon": "credit-card",
-              "slug": "category.index",
-              "role" : ["super-admin"],
-              "permission" : ["*"]
-            },
-            {
-              "url": "category/create",
-              "name": "Category New",
-              "icon": "plus-circle",
-              "slug": "category.create",
-              "role" : ["super-admin"],
-              "permission" : ["*"]
-            }
-          ]
         }
+        
       ]
     },
     {
@@ -121,20 +97,71 @@
         }
       ]
     },
+    
     {
-      "name": "Office Technical",
-      "icon": "tool",
+      "name": "Workflow",
+      "icon": "mail",
       "dropdown": "1",
       "slug": "",
       "role" : ["super-admin","admin","user"],
-      "permission" : ["documents_list","documents_create","documents_approval"],
+      "permission" : ["workflow_list","workflow_create","workflow_approval","documents_list","documents_create","documents_see","documents_check"],
       "submenu": [
         {
+          "name": "Commesse Conferma Ordine",
+          "icon": "list",
+          "slug": "",
+          "role" : ["super-admin","admin","user"],
+          "permission" : ["workflow_list","workflow_create","workflow_approval"],
+          "submenu": [
+            {
+              "url": "workflow/index",
+              "name": "Commesse Conferma Ordine List",
+              "icon": "archive",
+              "slug": "workflow.index",
+              "role" : ["super-admin","admin","user"],
+              "permission" : ["workflow_list","workflow_approval"]
+            },
+            {
+              "url": "workflow/create",
+              "name": "Commesse Conferma Ordine New",
+              "icon": "plus",
+              "slug": "workflow.create",
+              "role" : ["super-admin","admin","user"],
+              "permission" : ["workflow_create"]
+            }
+          ]
+        },
+        {
+          "name": "Variations",
+          "icon": "list",
+          "slug": "",
+          "role" : ["super-admin","admin","user"],
+          "permission" : ["variation_list","variation_create","variation_approval"],
+          "submenu": [
+            {
+              "url": "variation/index",
+              "name": "Variations List",
+              "icon": "archive",
+              "slug": "variation.index",
+              "role" : ["super-admin","admin","user"],
+              "permission" : ["variation_list","variation_approval"]
+            },
+            {
+              "url": "variation/create",
+              "name": "Variations New",
+              "icon": "plus",
+              "slug": "variation.create",
+              "role" : ["super-admin","admin","user"],
+              "permission" : ["variation_create"]
+            }
+          ]
+        },
+		{
           "name": "Documents",
           "icon": "list",
           "slug": "",
           "role" : ["super-admin","admin","user"],
-          "permission" : ["documents_list","documents_create","documents_approval"],
+          "permission" : ["documents_list","documents_create","documents_see","documents_check"],
           "submenu": [
             {
               "url": "document/index",
@@ -153,43 +180,32 @@
               "permission" : ["documents_create","documents_approval"]
             }
           ]
-        }
-      ]
-    },
-    {
-      "name": "Workflow",
-      "icon": "mail",
-      "dropdown": "1",
-      "slug": "",
-      "role" : ["super-admin","admin","user"],
-      "permission" : ["workflow_list","workflow_create","workflow_approval"],
-      "submenu": [
-        {
-          "name": "Workflow",
+        },
+		{
+          "name": "Categories Workflow",
           "icon": "list",
           "slug": "",
           "role" : ["super-admin","admin","user"],
-          "permission" : ["workflow_list","workflow_create","workflow_approval"],
+          "permission" : ["documents_create"],
           "submenu": [
             {
-              "url": "workflow/index",
-              "name": "Workflow List",
-              "icon": "archive",
-              "slug": "workflow.index",
-              "role" : ["super-admin","admin","user"],
-              "permission" : ["workflow_list","workflow_approval"]
+              "url": "category/index",
+              "name": "Category List",
+              "icon": "credit-card",
+              "slug": "category.index",
+			  "role" : ["super-admin","admin","user"],
+              "permission" : ["documents_create"]
             },
             {
-              "url": "workflow/create",
-              "name": "Workflow New",
-              "icon": "plus",
-              "slug": "workflow.create",
+              "url": "category/create",
+              "name": "Category New",
+              "icon": "plus-circle",
+              "slug": "category.create",
               "role" : ["super-admin","admin","user"],
-              "permission" : ["workflow_create"]
+              "permission" : ["documents_create"]
             }
           ]
         }
-
       ]
     }
 

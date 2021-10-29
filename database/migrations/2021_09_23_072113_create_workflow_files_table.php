@@ -19,7 +19,9 @@ class CreateWorkflowFilesTable extends Migration
             $table->foreign('Workflow')->references('id')->on('Workflows')->onDelete('cascade');
             $table->integer('user');
             $table->string('nomeFile')->nullable();
-            $table->text('path')->nullable();
+            $table->text('path_local')->nullable();
+            $table->text('path_drive')->nullable();
+            $table->text('path_folder_drive')->nullable();
             $table->timestamps();
         });
     }

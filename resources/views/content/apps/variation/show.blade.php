@@ -1,6 +1,6 @@
 @extends('layouts/contentLayoutMaster')
 
-@section('title', 'Invoice Preview')
+@section('title', __('locale.Variation'))
 
 @section('vendor-style')
 
@@ -37,33 +37,33 @@
 
                         @if(!empty($log_create))
                             <a class="btn btn-outline-info btn-block mb-75"
-                               href="{{url('workflow/log',['id'=> $workflow->id])}}">
+                               href="{{url('variation/log',['id'=> $variation->id])}}">
                                 Download Log
                             </a>
                         @elseif(!empty($start) || !empty($onlyView))
                             <h5 class="text-primary">Workflow avviato! </h5>
-                            <h6 class="text-info">{{$workflow->created_at}}</h6>
+                            <h6 class="text-info">{{$variation->created_at}}</h6>
                         @elseif(!empty($approvato) && empty($log_create))
                             <h5 class="text-success">Data firma: </h5><h5 class="text-info">{{$dataFirma}}</h5>
                         @elseif(empty($approvato) && empty($onlyView) && !empty($myApproved))
                             <a class="btn btn-success btn-block mb-75"
                                href="javascript:void(0);"
                                id="confirm-text"
-                               data-id="{{$workflow->id}}"
+                               data-id="{{$variation->id}}"
                                data-value="{{$user->id}}"
                             >
                                 Approva
                             </a>
                         @else
                             <h5 class="text-primary">Workflow avviato! </h5>
-                            <h6 class="text-info">{{$workflow->created_at}}</h6>
+                            <h6 class="text-info">{{$variation->created_at}}</h6>
                         @endif
-                        @if(auth()->user()->can('workflow_create') || auth()->user()->hasanyrole('super-admin'))
-                            <a href="{{route('workflow.edit',['id'=>$workflow->id])}}"
+                        @if(auth()->user()->can('variation_create') || auth()->user()->hasanyrole('super-admin'))
+                            <a href="{{route('variation.edit',['id'=>$variation->id])}}"
                                class="btn btn-primary btn-block mb-75">{{__('locale.Edit')}}</a>
                         @endif
-                        @if((auth()->user()->can('workflow_create') || auth()->user()->hasanyrole('super-admin')) && $workflowFile->path_folder_drive)
-                                <a target="_blank" href="https://drive.google.com/drive/folders/{{$workflowFile->path_folder_drive}}"
+                        @if((auth()->user()->can('variation_create') || auth()->user()->hasanyrole('super-admin')) && $variationFile->path_folder_drive)
+                                <a target="_blank" href="https://drive.google.com/drive/folders/{{$variationFile->path_folder_drive}}"
                                    class="btn btn-outline-primary btn-block mb-75"><i data-feather='hard-drive'></i> <span>Cartella Google Drive</span></a>
                         @endif
                     </div>
@@ -123,6 +123,6 @@
 
 @section('page-script')
 
-    <script src="{{ asset('js/scripts/extensions/workflow-sweet-alerts.js') }}"></script>
+    <script src="{{ asset('js/scripts/extensions/variations-sweet-alerts.js') }}"></script>
 @endsection
 

@@ -11,6 +11,6 @@ class WorkflowFile extends Model
     use HasFactory,UsesUuid;
 
     protected $fillable = [
-        'id','Workflow','user','nomeFile','path'
+        'id','Workflow','user','nomeFile','path_local','path_drive','path_folder_drive'
     ];
 }

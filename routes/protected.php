@@ -20,6 +20,7 @@ use App\Http\Controllers\ManagementController;
 use App\Http\Controllers\MaterialsCostController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\VariationController;
 use App\Http\Controllers\WorkflowCategoryController;
 use App\Http\Controllers\WorkflowController;
 use App\Http\Controllers\WorkStatusController;
@@ -28,16 +29,11 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LanguageController;
+use Illuminate\Support\Facades\Storage;
 
 
 Route::get('/', 'StaterkitController@home')->name('home');
-//Route::get('home', 'StaterkitController@home')->name('home');
-// Route Components
-Route::get('layouts/collapsed-menu', 'StaterkitController@collapsed_menu')->name('collapsed-menu');
-Route::get('layouts/boxed', 'StaterkitController@layout_boxed')->name('layout-boxed');
-Route::get('layouts/without-menu', 'StaterkitController@without_menu')->name('without-menu');
-Route::get('layouts/empty', 'StaterkitController@layout_empty')->name('layout-empty');
-Route::get('layouts/blank', 'StaterkitController@layout_blank')->name('layout-blank');
+
 
 //User
 /* Route Apps */
@@ -103,12 +99,29 @@ Route::group(['prefix' => 'workflow','middleware' => ['role:super-admin|admin|us
     Route::get('index',  [WorkflowController::class, 'index'] )->name('workflow.index');
     Route::get('list',  [WorkflowController::class, 'list'] )->name('workflow.list');
     Route::get('create',  [WorkflowController::class, 'create'] )->name('workflow.create');
+    Route::get('edit/{id}',  [WorkflowController::class, 'edit'] )->name('workflow.edit');
     Route::get('check',  [WorkflowController::class, 'check'] )->name('workflow.check');
     Route::post('store',  [WorkflowController::class, 'store'] )->name('workflow.store');
+    Route::post('update/{id}',  [WorkflowController::class, 'update'] )->name('workflow.update');
     Route::delete('destroy/{id}',  [WorkflowController::class, 'destroy'] )->name('workflow.destroy');
     Route::get('show/{id}',  [WorkflowController::class, 'show'] )->name('workflow.show');
     Route::post('sing/{id}',  [WorkflowController::class, 'sing'] )->name('workflow.sing');
     Route::get('log/{id}',  [WorkflowController::class, 'createPDF'] )->name('workflow.log');
+
+});
+
+Route::group(['prefix' => 'variation','middleware' => ['role:super-admin|admin|user']], function () {
+    Route::get('index',  [VariationController::class, 'index'] )->name('variation.index');
+    Route::get('list',  [VariationController::class, 'list'] )->name('variation.list');
+    Route::get('create',  [VariationController::class, 'create'] )->name('variation.create');
+    Route::get('edit/{id}',  [VariationController::class, 'edit'] )->name('variation.edit');
+    Route::get('check',  [VariationController::class, 'check'] )->name('variation.check');
+    Route::post('store',  [VariationController::class, 'store'] )->name('variation.store');
+    Route::post('update/{id}',  [VariationController::class, 'update'] )->name('variation.update');
+    Route::delete('destroy/{id}',  [VariationController::class, 'destroy'] )->name('variation.destroy');
+    Route::get('show/{id}',  [VariationController::class, 'show'] )->name('variation.show');
+    Route::post('sing/{id}',  [VariationController::class, 'sing'] )->name('variation.sing');
+    Route::get('log/{id}',  [VariationController::class, 'createPDF'] )->name('variation.log');
 
 });
 
@@ -150,7 +163,7 @@ Route::group(['prefix' => 'user','middleware' => ['role:super-admin|admin|user']
     Route::post('export-pdf',  [UserController::class, 'createPDF'] )->name('users.export.pdf');
 });
 
-Route::group(['prefix' => 'category','middleware' => ['role:super-admin']], function () {
+Route::group(['prefix' => 'category','middleware' => ['role:super-admin|admin|user']], function () {
     Route::get('index',  [WorkflowCategoryController::class, 'index'] )->name('category.index');
     Route::get('list',  [WorkflowCategoryController::class, 'list'] )->name('category.list');
     Route::get('create',  [WorkflowCategoryController::class, 'create'] )->name('category.create');

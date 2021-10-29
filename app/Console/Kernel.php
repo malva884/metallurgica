@@ -13,7 +13,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        Commands\WorkflowDailyNotify::class,
     ];
 
     /**
@@ -24,6 +24,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        $schedule->command('workflow:daily')            
+			->timezone('Europe/Amsterdam')
+			->weeklyOn(1, '8:00');
+            //->everyMinute();
         // $schedule->command('inspire')
         //          ->hourly();
     }

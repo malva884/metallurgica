@@ -4,10 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\WorkflowCategory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\DataTables;
 
 class WorkflowCategoryController extends Controller
 {
+
+    function __construct()
+    {
+        $this->middleware(['role_or_permission:super-admin|documents_create'], ['only' => ['index', 'list']]);
+        $this->middleware(['role_or_permission:super-admin|documents_create'], ['only' => ['create', 'store']]);
+        $this->middleware(['role_or_permission:super-admin|documents_edit'], ['only' => ['edit', 'update']]);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -60,17 +69,39 @@ class WorkflowCategoryController extends Controller
         //->toSql();
         //Log::channel('stderr')->info($totalRecords);//->where('model_has_roles.model_type', '=', 'App\User')
 
-        $response = array(
-            "draw" => intval($draw),
-            "iTotalRecords" => $totalRecords,
-            "iTotalDisplayRecords" => $totalRecordswithFilter,
-            "aaData" => $data_arr,
-        );
+        return DataTables::of(json_decode($data_arr, true))
+            ->setTotalRecords($totalRecordswithFilter)
+            ->addColumn('category', function ($row) {
+                return '<a href="edit/' . $row['id'] . '" class="user_name text-truncate"><span class="font-weight-bold">' .
+                    $row['category'] .
+                    '</span></a>';
+            })
+
+            ->addColumn('disabled', function ($row) {
+                $statusObj = [
+                    0 => ['title' => __('locale.Active'), 'class' => 'badge-light-success'],
+                    1 => ['title' => __('locale.Disabled'), 'class' => 'badge-light-danger']
+                ];
+                $html = '<span class="badge badge-pill ' . $statusObj[$row['disabled']]['class'] . ' text-capitalized">';
+                $html .= $statusObj[$row['disabled']]['title'] . '</span>';
+
+                return $html;
+            })
+
+            ->addColumn('action', function ($row) {
+                $user = Auth::user();
+                $btn = '<div class="btn-group" role="group" aria-label="Basic example">';
+                if (($user->hasAnyPermission(['documents_deleted']) && $user->hasRole(['admin', 'user'])) || $user->hasRole(['super-admin']))
+                    $btn .= '<button type="button"  class="btn btn-outline-danger" data-id="' . $row['id'] . '" data-toggle="modal" data-target="#DeleteProductModal"  data-backdrop="false" id="getDeleteId">Elimina</button>';
+
+                $btn .= '</div>';
+                return '';
+            })
+            ->rawColumns(['category', 'disabled', 'action'])
+            ->make(true);
+
 
         return json_encode($response);
-
-
-        //return datatables()->of($response)->toJson();
     }
 
     /**

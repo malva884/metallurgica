@@ -1,6 +1,6 @@
 @extends('layouts.contentLayoutMaster')
 
-@section('title', 'Workflow')
+@section('title',  __('locale.Variations'))
 
 @section('vendor-style')
     {{-- Page Css files --}}
@@ -30,17 +30,17 @@
     <!-- users list start -->
     <section class="app-user-list">
     @csrf
-    <!-- users filter start -->
+        <!-- users filter start -->
         <div class="card">
             <h5 class="card-header">Search Filter</h5>
             <div class="d-flex justify-content-between align-items-center mx-50 row pt-0 pb-2">
                 <div class="col-xl-6 col-md-6 col-12 mb-1">
                     <div class="form-group">
-                        <label for="basicInput">{{__('locale.Status Workflow')}}</label>
+                        <label for="basicInput">{{__('locale.Status Variations')}}</label>
                         <select id="status" class="form-control text-capitalize mb-md-0 mb-2xx">
                             <option value="2"> {{__('locale.Processing')}} </option>
                             <option value="3"> {{__('locale.Completed')}} </option>
-                            <option value="4"> {{__('locale.End')}} </option>
+							<option value="4"> {{__('locale.End')}} </option>
                             <option value=""> {{__('locale.All')}} </option>
                         </select>
                     </div>
@@ -57,9 +57,8 @@
                 </div>
                 <div class="col-xl-6 col-md-6 col-12 mb-1">
                     <div class="form-group">
-                        <label for="basicInput">{{__('locale.Commessa')}}</label>
-                        <input type="text" class="form-control" id="WorkCommessa"
-                               placeholder="{{__('locale.Commessa')}}"/>
+                        <label for="basicInput">{{__('locale.Ol')}}</label>
+                        <input type="text" class="form-control" id="ol" placeholder="{{__('locale.Ol')}}" />
                     </div>
                 </div>
             </div>
@@ -68,16 +67,15 @@
         <!-- list section start -->
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title">Lista Workflow</h4>
+                <h4 class="card-title">Lista Variazioni</h4>
             </div>
             <div class="card-datatable table-responsive pt-0">
                 <table class="user-list-table table" id="user-list-table">
                     <thead class="thead-light">
                     <tr>
-                        <th>Commessa</th>
-                        <th>Tipo</th>
+                        <th>Ol</th>
                         <th>Data</th>
-                        <th>Stato Workflow</th>
+                        <th>Stato Variazione</th>
                         <th>Stato Firma</th>
                         <th>Actions</th>
                     </tr>
@@ -130,46 +128,43 @@
     {{-- Page js files --}}
 
     <script type="text/javascript">
-        $(document).ready(function () {
-            var dtUserTable = $('.user-list-table');
-            if (dtUserTable.length) {
-                dtUserTable.DataTable({
-                    processing: true,
-                    serverSide: true,
-                    "searching": false,
-                    ajax: {
-                        url: '{{ route('workflow.list') }}',
-                        data: function (d) {
-                            alert($('#userView').val());
-                            d.view = $('#userView').val();
-                            d.status = $('#status').val();
-                            d.commessa = $('#WorkCommessa').val();
-                        },
-                        error: function (data) {
-                            console.log(data);
-                        }
+        $('#toast').toast('show')
+        var dtUserTable = $('.user-list-table');
+        if (dtUserTable.length) {
+            dtUserTable.DataTable({
+                processing: true,
+                serverSide: true,
+				"searching": false,
+                ajax: {
+                    url: '{{ route('variation.list') }}',
+                    data: function (d) {
+                        d.view = $('#userView').val();
+                        d.status = $('#status').val();
+                        d.ol = $('#ol').val();
                     },
-                    columns: [
-                        {data: 'commessa'},
-                        {data: 'type'},
-                        {data: 'created_at'},
-                        {data: 'status'},
-                        {data: 'aprovato'},
-                        {data: 'action', name: 'action', orderable: false, serachable: false, sClass: 'text-center'},
-                    ],
-                    order: [[2, 'desc']],
-                });
+                    error:function(data){
+                        console.log(data);
+                    }
+                },
+                columns: [
+                    {data: 'ol'},
+                    {data: 'created_at'},
+                    {data: 'status'},
+                    {data: 'aprovato'},
+                    {data: 'action', name: 'action',orderable:false,serachable:false, sClass:'text-center'},
+                ],
+                order: [[2, 'desc']],
+            });
 
-            }
-        });
+        }
 
-        $('#userView').change(function () {
+        $('#userView').change(function(){
             $('#user-list-table').DataTable().draw(true);
         });
-        $('#status').change(function () {
+        $('#status').change(function(){
             $('#user-list-table').DataTable().draw(true);
         });
-        $('#WorkCommessa').change(function () {
+        $('#ol').change(function(){
             $('#user-list-table').DataTable().draw(true);
         });
 

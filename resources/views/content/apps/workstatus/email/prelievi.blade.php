@@ -98,7 +98,7 @@
                                         <p  style="font-weight: 600; font-size: 18px; margin-bottom: 0;color: #28c76f;">Ciao,</p>
                                         <p  style="font-weight: 700; font-size: 20px; margin-top: 0; --text-opacity: 1; color: #7367f0;">{{$name}}!</p>
                                         <p style="margin: 24px 0;">
-                                            Ci sono dei quantità mancanti,
+                                            Ci sono delle quantità mancanti,
                                         </p>
                                         <p style="font-weight: 500; font-size: 16px; margin-bottom: 0;">clicca <a href="{{env('APP_URL').'/'.$route}}">Qui</a> per inserire.</p>
 

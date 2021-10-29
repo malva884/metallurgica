@@ -1,6 +1,6 @@
 @extends('layouts/contentLayoutMaster')
 
-@section('title', 'Home')
+@section('title', 'Dashboards')
 
 @section('content')
     <section id="statistics-card">
@@ -26,7 +26,8 @@
                             </div>
                         </div>
                         <div class="text-center">
-                            <h1 class="mb-1 text-white">Ciao {{Auth::user()->firstname.' '.Auth::user()->lastname}},</h1>
+                            <h1 class="mb-1 text-white">Ciao {{Auth::user()->firstname.' '.Auth::user()->lastname}}
+                                ,</h1>
                             <p class="card-text m-auto w-75">
                                 Benvenuti sul portale di Metallurgica Bresciana.
                             </p>
@@ -39,17 +40,17 @@
         <!--/ Miscellaneous Charts -->
 
         <!-- Stats Vertical Card -->
-        <div class="row">
-            @if(Auth::user()->hasAnyPermission('workflow_approval'))
-                <div class="col-xl-6 col-md-6 col-12">
-                @include('content/apps/_partials/dashboard-workflow-approval',['commessa'=>$commessa,'confermeOrdeine'=>$confermeOrdeine,'revisioni'=>$revisioni])
+        <div class="row" >
+            @if(Auth::user()->hasAnyPermission(['workflow_approval','variation_approval']) && ($commessa || $confermeOrdeine || $revisioni || $variationApproval) )
+                <div class="col-xl-6 col-md-12 col-12">
+                    @include('content.apps._partials.dashboard-approval',['commessa'=>$commessa,'confermeOrdeine'=>$confermeOrdeine,'revisioni'=>$revisioni,'variationApproval'=>$variationApproval])
                 </div>
             @endif
-                @if(Auth::user()->hasAnyPermission('workflow_create'))
-                    <div class="col-xl-6 col-md-6 col-12">
-                    @include('content/apps/_partials/dashboard-workflow-create',['workflowProcessing'=> $workflowProcessing,'workflowCompleted'=>$workflowCompleted])
-                    </div>
-                @endif
+            @if(Auth::user()->hasAnyPermission(['workflow_create','variation_create']) && ($workflowProcessing || $workflowCompleted || $variation_processing || $variation_completed))
+                    <div class="col-xl-4 col-md-12 col-12">
+                    @include('content/apps/_partials/dashboard-create',['workflowProcessing'=> $workflowProcessing,'workflowCompleted'=>$workflowCompleted,'variationProcessing'=> $variation_processing,'variationCompleted'=>$variation_completed])
+                </div>
+            @endif
         </div>
         <!--/ Stats Vertical Card -->
     </section>

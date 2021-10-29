@@ -1,6 +1,6 @@
 @extends('layouts/contentLayoutMaster')
 
-@section('title', 'Invoice Edit')
+@section('title', 'Modifica Specifica Tecnica')
 
 @section('vendor-style')
     <link rel="stylesheet" href="{{asset('vendors/css/pickers/flatpickr/flatpickr.min.css')}}">
@@ -31,16 +31,18 @@
     <section class="invoice-add-wrapper">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <div class="row invoice-add">
-
+            <div class="col-xl-3 col-md-4 col-12 invoice-actions mt-md-0 mt-2"></div>
             <!-- Invoice Add Left starts -->
-            <div class="col-xl-9 col-md-8 col-12">
+            <div class="col-xl-6 col-md-6 col-12">
                 <div class="documents">
-                <?php $n = 1; ?>
-                @foreach($pages as $page)
+                    <?php $n = 1; ?>
+                    @foreach($pages as $page)
 
                         <div class="card invoice-preview-card origin" id="editor_{{$n}}">
                             <!-- Header starts -->
-                            <button type="button" class="swal2-close" aria-label="Close this dialog" style="display: flex;" onClick="removeElement({{$n}})">×</button>
+                            <!-- button type="button" class="swal2-close" aria-label="Close this dialog"
+                                    style="display: flex;" onClick="removeElement({{$n}})">×
+                            </button -->
                             <div class="card-body invoice-padding  pb-0">
                                 <div class="d-flex justify-content-between flex-md-row flex-column invoice-spacing mt-0">
                                     <div class="table-responsive">
@@ -49,12 +51,12 @@
                                                 <img
                                                         class="img-fluid rounded"
                                                         src="{{asset('/images/logo/stl.png')}}"
-                                                        height="104"
-                                                        width="104"
-                                                        alt="User avatar"
+                                                        height="60"
+                                                        width="60"
                                                 />
-                                                <p class="font-weight-bolder" style="display: inline; font-size: 45px;">
-                                                    &nbsp;&nbsp;Metallutgica Bresciana S.p.a.</p>
+                                                <p class="font-weight-bolder mt-0 py-0"
+                                                   style="font-family: 'Palace Script MT', sans-serif; font-weight: bold; display: inline; font-size: 50px;">
+                                                    &nbsp;&nbsp;Metallutgica Bresciana s.p.a.</p>
                                             </div>
                                         </div>
 
@@ -63,7 +65,7 @@
                                             <tr>
                                                 <td>
                                                     <div class="form-group row">
-                                                        <label for="colFormLabel" class="col-sm-12 col-form-label">s.p.aTechnical
+                                                        <label for="colFormLabel" class="col-sm-12 col-form-label">Technical
                                                             Dept.</label>
                                                     </div>
                                                 </td>
@@ -75,13 +77,10 @@
                                                 </td>
                                                 <td>
                                                     <div class="form-group row">
-                                                        <label for="colFormLabel" class="col-sm-5 col-form-label">Specification
+                                                        <label for="colFormLabel" class="col-sm-4 col-form-label">Specification
                                                             N°</label>
                                                         <div class="col-sm-6">
-                                                            <input type="text" class="form-control" id="specific_number"
-                                                                   name="specific_number"
-                                                                   class="form-control " placeholder="Specification n°"
-                                                                   value="{{$document->specific_number}}"/>
+                                                            <span style="font-size: 18px; text-align:left">{{$document->specific_number}}</span>
                                                         </div>
                                                     </div>
                                                 </td>
@@ -93,11 +92,10 @@
                             </div>
                             <!-- Header ends -->
 
-                            <hr class="invoice-spacing"/>
 
                             <div class="row">
                                 <div class="col-sm-11" style="display: inline;margin-left: 5%;">
-                                    <textarea id="document_page_{{$n}}" ><?php echo $page->text; ?></textarea>
+                                    <textarea id="document_page_{{$n}}"><?php echo $page->text; ?></textarea>
                                 </div>
                             </div>
                             <hr class="invoice-spacing mt-0"/>
@@ -111,18 +109,21 @@
                             </div>
                         </div>
 
-                    <?php $n++; ?>
-                @endforeach
-                    </div>
+                        <?php $n++; ?>
+                    @endforeach
+                </div>
             </div>
             <!-- Invoice Add Left ends -->
 
             <!-- Invoice Add Right starts -->
             <div class="col-xl-3 col-md-4 col-12">
                 <div class="mt-2">
-                    <p class="mb-50">Title Document</p>
-                    <input type="text" class="form-control" id="title" placeholder="Title Document"
-                           value="{{$document->title}}"/>
+                    <p class="mb-50">Specifica</p>
+                    <input type="text" class="form-control" id="specific_number"
+                           name="specific_number"
+                           class="form-control " placeholder="Specification n°"
+                           value="{{$document->specific_number}}"/>
+
                 </div>
                 <div class="mt-2">
                     <p class="mb-50">Category</p>
@@ -182,59 +183,54 @@
     <script src="https://unpkg.com/quill-image-uploader@1.2.1/dist/quill.imageUploader.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/2.0.0-dev.3/quill.min.js" type="text/javascript"></script>
     <script src="https://unpkg.com/quill-table-ui@1.0.5/dist/umd/index.js" type="text/javascript"></script>
-    <script src='https://cdn.tiny.cloud/1/iz5jhht1zz14maaaym5s91tzkrblfwf3i1knz9xkglxf31nz/tinymce/5/tinymce.min.js' referrerpolicy="origin"> </script>
+    <script src='https://cdn.tiny.cloud/1/14jzepvheitbqnd4u1a9qnq46m27xpn657dfpegsn5cvt5co/tinymce/5/tinymce.min.js'
+            referrerpolicy="origin"></script>
 
-        <script>
-            var total_page = parseInt($('#page_n').val());
+    <script>
+        var total_page = parseInt($('#page_n').val());
         $('#btn-add-new').click(function (total_page) {
             var pages = parseInt($('#page_n').val()) + 1;
+
             $('.documents').append(
-                '<div class="card invoice-preview-card origin" id="editor_'+ pages +'">' +
-                '<button type="button" class="swal2-close" aria-label="Close this dialog" style="display: flex;" onClick="removeElement('+pages+')">×</button>'+
-                '<div class="card-body invoice-padding  pb-0">' +
-                '<div class="d-flex justify-content-between flex-md-row flex-column invoice-spacing mt-0"><div>' +
-                '<div class="table-responsive"' +
-                '<div class="row" >' +
-                '<div class="col-12" style="text-align: center">' +
-                '<img class="img-fluid rounded" src="{{asset('/images/logo/stl.png')}}" height="104" width="104" alt="User avatar">' +
-                '<p class="font-weight-bolder" style="display: inline; font-size: 45px;">' +
-                '&nbsp;&nbsp;Metallutgica Bresciana S.p.a.</p>' +
-                '</div></div>' +
-                '<table class="table table-bordered" style="width: 1160px; ">' +
-                '<tbody><tr><td>' +
-                '<div class="form-group row">' +
-                '<label for="colFormLabel" class="col-sm-12 col-form-label">s.p.aTechnical Dept.</label>' +
-                '</div>' +
-                '</td><td>' +
-                '<div class="form-group row">' +
-                '<label for="colFormLabel" class="col-sm-12 col-form-label">TECHNICAL DATA SHEET</label>' +
-                '</div>' +
-                '</td><td>' +
-                '<div class="form-group row">' +
-                '<label for="colFormLabel" class="col-sm-5 col-form-label">Specification N°</label>' +
-                '<div class="col-sm-6">' +
-                '<span>' + $('#specific_number').val() + '</span>' +
-                '</div>' +
-                '</div>' +
-                '</td></tr></tbody></div></table></div></div></div>' +
-                '<hr class="invoice-spacing"/>' +
-                '<div class="row">' +
-                '<div class="col-sm-11" style="display: inline;margin-left: 5%;">' +
+                '<div class="card invoice-preview-card origin">'+
+                '<div class="card-body invoice-padding  pb-0">'+
+                '<div class="d-flex justify-content-between flex-md-row flex-column invoice-spacing mt-0"><div>'+
+                '<div class="table-responsive"'+
+                '<div class="row" >'+
+                '<div class="col-12" style="text-align: center">'+
+                '<img class="img-fluid rounded" src="{{asset('/images/logo/stl.png')}}" height="60" width="60" alt="User avatar">'+
+                '<p class="font-weight-bolder" style=" font-family: Palace Script MT , sans-serif; display: inline; font-size: 50px;">' +
+                '&nbsp;Metallutgica Bresciana s.p.a.</p>'+
+                '</div></div>'+
+                '<table class="table table-bordered" style="width: 850px; ">'+
+                '<tbody><tr><td>'+
+                '<div class="form-group row">'+
+                '<label for="colFormLabel" class="col-sm-12 col-form-label">s.p.aTechnical Dept.</label>'+
+                '</div>'+
+                '</td><td>'+
+                '<div class="form-group row">'+
+                '<label for="colFormLabel" class="col-sm-12 col-form-label">TECHNICAL DATA SHEET</label>'+
+                '</div>'+
+                '</td><td>'+
+                '<div class="form-group row">'+
+                '<label for="colFormLabel" class="col-sm-5 col-form-label">Specification N°</label>'+
+                '<div class="col-sm-6">'+
+                '<span id="num_specifica"></span>'+
+                '</div>'+
+                '</div>'+
+                '</td></tr></tbody></div></table></div></div></div>'+
+                '<div class="row">'+
+                '<div class="col-sm-11" style="display: inline;margin-left: 5%;">'+
                 '<textarea id="document_page_'+pages+'"></textarea>'+
-                '</div>' +
-                '<hr class="invoice-spacing mt-0"/>' +
-                '<div class="card-body invoice-padding py-0">' +
-                '<div class="row">' +
+                '</div>'+
+                '<hr class="invoice-spacing mt-0"/>'+
+                '<div class="card-body invoice-padding py-0">'+
+                '<div class="row">'+
                 '<div class="col-12"></div></div></div></div>'
             );
             $('#page_n').val(pages);
+            create_tiny(pages);
 
-            console.log(pages +' '+ total_page);
-            if(pages > total_page){
-
-                create_tiny(pages);
-            }else
-                alert(this.total_page);
 
 
 
@@ -243,11 +239,11 @@
         (function (window, document, $) {
             for (let i = 1; i <= parseInt($('#page_n').val()); i++) {
                 tinymce.init({
-                    selector: 'textarea#document_page_'+i,
-                    height: 1050,
-                    relative_urls : false,
-                    remove_script_host : false,
-                    convert_urls : true,
+                    selector: 'textarea#document_page_' + i,
+                    height: {{$height_page}},
+                    relative_urls: false,
+                    remove_script_host: false,
+                    convert_urls: true,
                     plugins: [
                         'advlist autolink lists link image charmap anchor',
                         'searchreplace visualblocks code fullscreen',
@@ -280,26 +276,42 @@
                         '.tablerow1 { background-color: #D3D3D3; }',
                     formats: {
 
-                        bold: { inline: 'span', classes: 'bold' },
-                        italic: { inline: 'span', classes: 'italic' },
-                        underline: { inline: 'span', classes: 'underline', exact: true },
-                        strikethrough: { inline: 'del' },
-                        customformat: { inline: 'span', styles: { color: '#00ff00', fontSize: '20px' }, attributes: { title: 'My custom format'} , classes: 'example1'}
+                        bold: {inline: 'span', classes: 'bold'},
+                        italic: {inline: 'span', classes: 'italic'},
+                        underline: {inline: 'span', classes: 'underline', exact: true},
+                        strikethrough: {inline: 'del'},
+                        customformat: {
+                            inline: 'span',
+                            styles: {color: '#00ff00', fontSize: '20px'},
+                            attributes: {title: 'My custom format'},
+                            classes: 'example1'
+                        }
                     },
                     style_formats: [
-                        { title: 'Custom format', format: 'customformat' },
-                        { title: 'Align left', format: 'alignleft' },
-                        { title: 'Align center', format: 'aligncenter' },
-                        { title: 'Align right', format: 'alignright' },
-                        { title: 'Align full', format: 'alignfull' },
-                        { title: 'Bold text', inline: 'strong' },
-                        { title: 'Red text', inline: 'span', styles: { color: '#ff0000' } },
-                        { title: 'Red header', block: 'h1', styles: { color: '#ff0000' } },
-                        { title: 'Badge', inline: 'span', styles: { display: 'inline-block', border: '1px solid #2276d2', 'border-radius': '5px', padding: '2px 5px', margin: '0 2px', color: '#2276d2' } },
-                        { title: 'Table row 1', selector: 'tr', classes: 'tablerow1' },
-                        { title: 'Image formats' },
-                        { title: 'Image Left', selector: 'img', styles: { 'float': 'left', 'margin': '0 10px 0 10px' } },
-                        { title: 'Image Right', selector: 'img', styles: { 'float': 'right', 'margin': '0 0 10px 10px' } },
+                        {title: 'Custom format', format: 'customformat'},
+                        {title: 'Align left', format: 'alignleft'},
+                        {title: 'Align center', format: 'aligncenter'},
+                        {title: 'Align right', format: 'alignright'},
+                        {title: 'Align full', format: 'alignfull'},
+                        {title: 'Bold text', inline: 'strong'},
+                        {title: 'Red text', inline: 'span', styles: {color: '#ff0000'}},
+                        {title: 'Red header', block: 'h1', styles: {color: '#ff0000'}},
+                        {
+                            title: 'Badge',
+                            inline: 'span',
+                            styles: {
+                                display: 'inline-block',
+                                border: '1px solid #2276d2',
+                                'border-radius': '5px',
+                                padding: '2px 5px',
+                                margin: '0 2px',
+                                color: '#2276d2'
+                            }
+                        },
+                        {title: 'Table row 1', selector: 'tr', classes: 'tablerow1'},
+                        {title: 'Image formats'},
+                        {title: 'Image Left', selector: 'img', styles: {'float': 'left', 'margin': '0 10px 0 10px'}},
+                        {title: 'Image Right', selector: 'img', styles: {'float': 'right', 'margin': '0 0 10px 10px'}},
                     ],
                     images_upload_handler: function (blobInfo, success, failure) {
                         var xhr, formData;
@@ -308,7 +320,7 @@
                         xhr.open('POST', '{{route('document.image')}}');
                         var token = '{{ csrf_token() }}';
                         xhr.setRequestHeader("X-CSRF-Token", token);
-                        xhr.onload = function() {
+                        xhr.onload = function () {
                             var json;
                             if (xhr.status != 200) {
                                 failure('HTTP Error: ' + xhr.status);
@@ -331,13 +343,13 @@
             }
         })(window, document, jQuery);
 
-        function create_tiny(pages){
+        function create_tiny(pages) {
             tinymce.init({
-                selector: 'textarea#document_page_'+pages,
-                height: 1050,
-                relative_urls : false,
-                remove_script_host : false,
-                convert_urls : true,
+                selector: 'textarea#document_page_' + pages,
+                height: {{$height_page}},
+                relative_urls: false,
+                remove_script_host: false,
+                convert_urls: true,
                 plugins: [
                     'advlist autolink lists link image charmap anchor',
                     'searchreplace visualblocks code fullscreen',
@@ -369,30 +381,58 @@
                     'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }' +
                     '.tablerow1 { background-color: #D3D3D3; }',
                 formats: {
-                    alignleft: { selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img,audio,video', classes: 'left' },
-                    aligncenter: { selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img,audio,video', classes: 'center' },
-                    alignright: { selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img,audio,video', classes: 'right' },
-                    alignfull: { selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img,audio,video', classes: 'full' },
-                    bold: { inline: 'span', classes: 'bold' },
-                    italic: { inline: 'span', classes: 'italic' },
-                    underline: { inline: 'span', classes: 'underline', exact: true },
-                    strikethrough: { inline: 'del' },
-                    customformat: { inline: 'span', styles: { color: '#00ff00', fontSize: '20px' }, attributes: { title: 'My custom format'} , classes: 'example1'}
+                    alignleft: {
+                        selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img,audio,video',
+                        classes: 'left'
+                    },
+                    aligncenter: {
+                        selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img,audio,video',
+                        classes: 'center'
+                    },
+                    alignright: {
+                        selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img,audio,video',
+                        classes: 'right'
+                    },
+                    alignfull: {
+                        selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img,audio,video',
+                        classes: 'full'
+                    },
+                    bold: {inline: 'span', classes: 'bold'},
+                    italic: {inline: 'span', classes: 'italic'},
+                    underline: {inline: 'span', classes: 'underline', exact: true},
+                    strikethrough: {inline: 'del'},
+                    customformat: {
+                        inline: 'span',
+                        styles: {color: '#00ff00', fontSize: '20px'},
+                        attributes: {title: 'My custom format'},
+                        classes: 'example1'
+                    }
                 },
                 style_formats: [
-                    { title: 'Custom format', format: 'customformat' },
-                    { title: 'Align left', format: 'alignleft' },
-                    { title: 'Align center', format: 'aligncenter' },
-                    { title: 'Align right', format: 'alignright' },
-                    { title: 'Align full', format: 'alignfull' },
-                    { title: 'Bold text', inline: 'strong' },
-                    { title: 'Red text', inline: 'span', styles: { color: '#ff0000' } },
-                    { title: 'Red header', block: 'h1', styles: { color: '#ff0000' } },
-                    { title: 'Badge', inline: 'span', styles: { display: 'inline-block', border: '1px solid #2276d2', 'border-radius': '5px', padding: '2px 5px', margin: '0 2px', color: '#2276d2' } },
-                    { title: 'Table row 1', selector: 'tr', classes: 'tablerow1' },
-                    { title: 'Image formats' },
-                    { title: 'Image Left', selector: 'img', styles: { 'float': 'left', 'margin': '0 10px 0 10px' } },
-                    { title: 'Image Right', selector: 'img', styles: { 'float': 'right', 'margin': '0 0 10px 10px' } },
+                    {title: 'Custom format', format: 'customformat'},
+                    {title: 'Align left', format: 'alignleft'},
+                    {title: 'Align center', format: 'aligncenter'},
+                    {title: 'Align right', format: 'alignright'},
+                    {title: 'Align full', format: 'alignfull'},
+                    {title: 'Bold text', inline: 'strong'},
+                    {title: 'Red text', inline: 'span', styles: {color: '#ff0000'}},
+                    {title: 'Red header', block: 'h1', styles: {color: '#ff0000'}},
+                    {
+                        title: 'Badge',
+                        inline: 'span',
+                        styles: {
+                            display: 'inline-block',
+                            border: '1px solid #2276d2',
+                            'border-radius': '5px',
+                            padding: '2px 5px',
+                            margin: '0 2px',
+                            color: '#2276d2'
+                        }
+                    },
+                    {title: 'Table row 1', selector: 'tr', classes: 'tablerow1'},
+                    {title: 'Image formats'},
+                    {title: 'Image Left', selector: 'img', styles: {'float': 'left', 'margin': '0 10px 0 10px'}},
+                    {title: 'Image Right', selector: 'img', styles: {'float': 'right', 'margin': '0 0 10px 10px'}},
                 ],
                 powerpaste_allow_local_images: true,
                 powerpaste_word_import: 'prompt',
@@ -403,7 +443,7 @@
                     xhr.open('POST', '{{route('document.image')}}');
                     var token = '{{ csrf_token() }}';
                     xhr.setRequestHeader("X-CSRF-Token", token);
-                    xhr.onload = function() {
+                    xhr.onload = function () {
                         var json;
                         if (xhr.status != 200) {
                             failure('HTTP Error: ' + xhr.status);
@@ -430,7 +470,7 @@
 
             const editor_value = [];
             while (n >= i) {
-                editor_value[i] = tinymce.get("document_page_"+i).getContent();
+                editor_value[i] = tinymce.get("document_page_" + i).getContent();
                 i++;
             }
             $.ajax({
@@ -441,7 +481,6 @@
                     "editors": editor_value,
                     "specification": $('#specific_number').val(),
                     "category": $('#category').val(),
-                    "title": $('#title').val(),
                     'pages': n,
                     "_token": "{{ csrf_token() }}"
                 },
@@ -449,7 +488,8 @@
                 success: function (data) {
                     window.location = "/document/show/" + data;
                 }
-            });$.ajax({
+            });
+            $.ajax({
                 type: "POST",
                 url: '{{route('document.update')}}',
                 data: {
@@ -469,13 +509,14 @@
 
 
         }
+
         function removeElement(id) {
-            var myobj = document.getElementById("editor_"+id);
+            var myobj = document.getElementById("editor_" + id);
             myobj.remove();
             let n = $('#page_n').val();
-            if(n > 1)
-                $('#page_n').val(n-1);
-            else{
+            if (n > 1)
+                $('#page_n').val(n - 1);
+            else {
                 var button = document.getElementById("btn-add-new");
                 button.click();
             }
@@ -486,11 +527,23 @@
         .ql-editor {
             height: 950px;
             max-height: 950px;
-            min-height:950px;
+            min-height: 950px;
         }
 
         .table-responsive {
             display: table;
+        }
+
+        .table tbody tr td {
+            font-size: 8px;
+            border: ridge #000 1px !important;
+        }
+
+        th {
+            font-family: "Trebuchet MS", Arial, Verdana;
+            font-size: 8px !important;
+            padding: 5px;
+            border: ridge #000 1px !important;
         }
     </style>
 @endsection

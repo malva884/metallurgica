@@ -54,7 +54,7 @@
 
         };
 
-        setInterval(getNewNotifications, 10000);
+        setInterval(getNewNotifications, 60000);
 
 
  </script>

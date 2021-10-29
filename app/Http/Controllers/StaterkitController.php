@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Variation;
 use App\Models\Workflow;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,46 +12,40 @@ use Spatie\Permission\Models\Role;
 class StaterkitController extends Controller
 {
   // home
+
+
   public function home(){
-      $workflow_cnfOrdine = $workflow_commessa = $workflow_processing = $workflow_completed = $workflow_Revisione =  null;
-     if(Auth::user()->hasAnyPermission('workflow_approval')){
-         $workflow_commessa = Workflow::select('count(*) as allcount')
-             ->leftJoin('workflow_users', 'workflow_users.Workflow', 'workflows.id')
-             ->Where('workflow_users.user', '=', Auth::user()->id)
-             ->WhereNull('workflow_users.aprovato')
-             ->Where('workflows.type', '=', 1)
-             ->count();
-         $workflow_cnfOrdine = Workflow::select('count(*) as allcount')
-             ->leftJoin('workflow_users', 'workflow_users.Workflow', 'workflows.id')
-             ->Where('workflow_users.user', '=', Auth::user()->id)
-             ->WhereNull('workflow_users.aprovato')
-             ->Where('workflows.type', '=', 2)
-             ->count();
-         $workflow_Revisione = Workflow::select('count(*) as allcount')
-             ->leftJoin('workflow_users', 'workflow_users.Workflow', 'workflows.id')
-             ->Where('workflow_users.user', '=', Auth::user()->id)
-             ->WhereNull('workflow_users.aprovato')
-             ->Where('workflows.type', '=', 3)
-             ->count();
-     }
+      $workflow_cnfOrdine = $workflow_commessa = $workflow_processing = $workflow_completed = $workflow_Revisione = $variation_processing = $variation_completed = $variation_approval = null;
+      if(Auth::user()->hasAnyPermission('workflow_approval')){
+          $workflow_commessa = Workflow::get_user_workflow(Auth::id(),true,1);
+          $workflow_cnfOrdine = Workflow::get_user_workflow(Auth::id(),true,2);
+          $workflow_Revisione = Workflow::get_user_workflow(Auth::id(),true,3);
+      }
+      if(Auth::user()->hasAnyPermission('variation_approval')){
+          $variation_approval = Variation::get_user_workflow(Auth::id(),true);
+      }
 
       if(Auth::user()->hasAnyPermission('workflow_create')){
-          $workflow_processing = Workflow::select('count(*) as allcount')
-              ->Where('workflows.status', '=', 2)
-              ->count();
-          $workflow_completed = Workflow::select('count(*) as allcount')
-              ->Where('workflows.status', '=', 3)
-              ->count();
+          $workflow_processing = Workflow::get_user_workflow(null,false,null,2);
+
+          $workflow_completed = Workflow::get_user_workflow(null,false,null,3);
+      }
+
+      if(Auth::user()->hasAnyPermission('variation_create')){
+          $variation_processing = Variation::get_user_workflow(null,false,null,2);
+          $variation_completed = Variation::get_user_workflow(null,false,null,3);
       }
 
 
-    $breadcrumbs = [
-        ['link'=>"home",'name'=>"Home"], ['name'=>"Index"]
-    ];
-    return view('/content/home', ['breadcrumbs' => $breadcrumbs, 'commessa' => $workflow_commessa,
-        'confermeOrdeine' => $workflow_cnfOrdine,'revisioni'=> $workflow_Revisione ,'workflowProcessing'=>$workflow_processing,
-        'workflowCompleted' => $workflow_completed
-    ]);
+
+      $breadcrumbs = [
+
+      ];
+      return view('/content/home', ['breadcrumbs' => $breadcrumbs, 'commessa' => $workflow_commessa,
+          'confermeOrdeine' => $workflow_cnfOrdine,'revisioni'=> $workflow_Revisione ,'workflowProcessing'=>$workflow_processing,
+          'workflowCompleted' => $workflow_completed,'variation_processing'=> $variation_processing,'variation_completed'=>$variation_completed,
+          'variationApproval' =>$variation_approval
+      ]);
   }
 
   // Layout collapsed menu

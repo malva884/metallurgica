@@ -26,12 +26,11 @@ class UserController extends Controller
     function __construct()
     {
         $this->middleware(['role_or_permission:super-admin|user_list'], ['only' => ['index']]);
-        $this->middleware(['role_or_permission:super-admin|user_edit'], ['only' => ['edit', 'update']]);
-        $this->middleware(['role_or_permission:super-admin|user_permission'], ['only' => ['account_settings_permissions','set_permissions']]);
-        $this->middleware(['role_or_permission:super-admin|user_edit'], ['only' => ['account_settings_account', 'update']]);
+        //$this->middleware(['role_or_permission:super-admin|user_edit'], ['only' => ['edit']]);
+        $this->middleware(['role_or_permission:super-admin|user_permission'], ['only' => ['account_settings_permissions', 'set_permissions']]);
+        $this->middleware(['role_or_permission:super-admin|user_edit'], ['only' => ['account_settings_account']]);
         $this->middleware(['role_or_permission:super-admin|user_create'], ['only' => ['create', 'store']]);
         $this->middleware(['role_or_permission:super-admin|user_delete'], ['only' => ['destroy']]);
-        // $this->middleware(['role_or_permission:super-admin|user_edit'], ['only' => ['edit', 'update']]);
         $this->middleware(['role_or_permission:super-admin|user_view'], ['only' => ['show']]);
         $this->middleware(['role_or_permission:super-admin|user_permission'], ['only' => ['permessi']]);
 
@@ -42,16 +41,15 @@ class UserController extends Controller
     {
         $this->CheckPremission($request);
 
-        if(empty($request->id))
+        if (empty($request->id))
             $user = Auth::user();
-        else{
+        else {
             $user = User::find($request->id);
-            if(empty($user))
+            if (empty($user))
                 abort(404);
         }
 
         $roles = Role::pluck('name', 'id')->all();
-
         $userRole = $user->roles->pluck('id')->toArray();
 
         if (empty($userRole))
@@ -59,7 +57,7 @@ class UserController extends Controller
 
         $breadcrumbs = [['link' => "/", 'name' => "Home"], ['link' => "user/index", 'name' => "Utenti"], ['name' => "Account"]];
 
-        return view('/content/apps/user/account-settings-account', compact('breadcrumbs','user','roles','userRole'));
+        return view('/content/apps/user/account-settings-account', compact('breadcrumbs', 'user', 'roles', 'userRole'));
     }
 
     // Account Settings security
@@ -67,18 +65,18 @@ class UserController extends Controller
     {
         $user = Auth::user();
         $breadcrumbs = [['link' => "/", 'name' => "Home"], ['link' => "user/index", 'name' => "Utenti"], ['name' => "Security"]];
-        return view('/content/apps/user/account-settings-security', compact('breadcrumbs','user'));
+        return view('/content/apps/user/account-settings-security', compact('breadcrumbs', 'user'));
     }
 
     public function account_settings_permissions(Request $request)
     {
 
-        if(empty($request->id))
+        if (empty($request->id))
             $user = Auth::user();
-        else{
+        else {
             $user = User::find($request->id);
 
-            if(empty($user))
+            if (empty($user))
                 abort(404);
         }
 
@@ -99,7 +97,7 @@ class UserController extends Controller
 
         rsort($titoli);
         $breadcrumbs = [['link' => "/", 'name' => "Home"], ['link' => "user/index", 'name' => "Utenti"], ['name' => "Permessi Utente"]];
-        return view('/content/apps/user/account-settings-permissions',compact('breadcrumbs','titoli','permessi_user','user'));
+        return view('/content/apps/user/account-settings-permissions', compact('breadcrumbs', 'titoli', 'permessi_user', 'user'));
     }
 
     /**
@@ -254,19 +252,40 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $validated = request()->validate([
-            'firstname' => 'required',
-            'lastname' => 'required',
-            'email' => 'required|email|unique:users,email,' . $id,
-            'acl' => 'required',
-        ]);
-        $input = $request->except(['acl', 'image']);
+        $user = User::find($id);
+        if (Auth::user()->id == $id && Auth::user()->hasAnyPermission(['user_edit']))
+            $validated = request()->validate([
+                'firstname' => 'required',
+                'lastname' => 'required',
+                'email' => 'required|email|unique:users,email,' . $id,
+            ]);
+        else
+            $validated = request()->validate([
+                'firstname' => 'required',
+                'lastname' => 'required',
+                'email' => 'required|email|unique:users,email,' . $id,
+                'acl' => 'required',
+            ]);
+
+
+        $input = $request->except(['image', 'signature']);
         if (!empty($input['password'])) {
             $input['password'] = Hash::make($input['password']);
         } else {
             $input = Arr::except($input, array('password'));
         }
         $user = User::find($id);
+        if (Auth::user()->id == $id) {
+            $input['acl'] = $user->acl;
+            $input['status'] = $user->status;
+        }
+
+        if (request()->file('signature')) {
+            $imageSing = $user->id . '_signature.' . request()->signature->extension();
+            request()->signature->move(public_path('images\users'), $imageSing);
+            $user->img_signature = $imageSing;
+            $user->save();
+        }
 
         if (request()->file('image')) {
             $imageName = $user->id . '.' . request()->image->extension();
@@ -279,48 +298,53 @@ class UserController extends Controller
                 $user->image = 'default/f_' . rand(1, 4) . '.png';
         }
         $user->update($input);
+
+
         if (empty($user->roles->first()->id))
-            $user->set_role($request->input('acl'));
-        elseif ($user->roles->first()->id != $request->input('acl'))
-            $user->change_role($request->input('acl'));
+            $user->set_role($input['acl']);
+        elseif ($user->roles->first()->id != $input['acl'])
+            $user->change_role($input['acl']);
 
+        if (Auth::user()->id == $id && Auth::user()->hasAnyPermission(['user_edit']))
+            return redirect()->route('user.account')
+                ->with('success', __('locale.Changes saved'));
+        else
+            return redirect()->route('user.account', ['id' => $user->id])
+                ->with('success', __('locale.Changes saved'));
 
-        return redirect()->route('user.account', ['id' => $user->id])
-            ->with('success', __('locale.Changes saved'));
     }
 
 
-    public function changePassword(Request $request){
+    public function changePassword(Request $request)
+    {
         $validated = request()->validate([
             'password' => 'required',
             'new_password' => 'required',
             'confirm_new_password' => 'required',
         ]);
 
-        if($request->new_password != $request->confirm_new_password){
-            session()->flash('error','New password & Retype New Password They do not match');
+        if ($request->new_password != $request->confirm_new_password) {
+            session()->flash('error', 'New password & Retype New Password They do not match');
             return redirect()->back();
         }
 
-        $user= Auth::user();
+        $user = Auth::user();
         $hashedPassword = $user->password;
 
-        if (Hash::check($request->password , $hashedPassword)) {
-            if (!Hash::check($request->new_password , $hashedPassword)) {
+        if (Hash::check($request->password, $hashedPassword)) {
+            if (!Hash::check($request->new_password, $hashedPassword)) {
 
                 $users = User::find($user->id);
                 $users->password = bcrypt($request->new_password);
                 $users->save();
-                session()->flash('success','password updated successfully');
+                session()->flash('success', 'password updated successfully');
+                return redirect()->back();
+            } else {
+                session()->flash('error', 'new password can not be the old password!');
                 return redirect()->back();
             }
-            else{
-                session()->flash('error','new password can not be the old password!');
-                return redirect()->back();
-            }
-        }
-        else{
-            session()->flash('error','old password doesnt matched');
+        } else {
+            session()->flash('error', 'old password doesnt matched');
             return redirect()->back();
         }
     }
@@ -437,7 +461,7 @@ class UserController extends Controller
             ->get();
         //->toSql();
 
-       return  DataTables::of($data_arr)
+        return DataTables::of($data_arr)
             ->setTotalRecords($totalRecords)
             ->addColumn('firstname', function ($row) {
                 $user = Auth::user();
@@ -462,15 +486,15 @@ class UserController extends Controller
                     '</div>' .
                     '</div>' .
                     '<div class="d-flex flex-column">';
-                if(($user->hasAnyPermission(['user_view']) && $user->hasRole(['admin','user'])) || $user->hasRole(['super-admin']))
-                    $row_output.='<a href="show/'.$row->id.'" class="user_name text-truncate"><span class="font-weight-bold">'.
-                    $name .
-                    '</span></a>';
+                if (($user->hasAnyPermission(['user_view']) && $user->hasRole(['admin', 'user'])) || $user->hasRole(['super-admin']))
+                    $row_output .= '<a href="show/' . $row->id . '" class="user_name text-truncate"><span class="font-weight-bold">' .
+                        $name .
+                        '</span></a>';
                 else
-                    $row_output.='<span class="font-weight-bold">'.
+                    $row_output .= '<span class="font-weight-bold">' .
                         $name .
                         '</span>';
-                $row_output.='</div>' .
+                $row_output .= '</div>' .
                     '</div>';
                 return $row_output;
             })
@@ -496,19 +520,19 @@ class UserController extends Controller
                 $status = $row->status;
                 return '<span class="badge badge-pill ' .
                     $statusObj[$status]['class'] .
-                '" text-capitalized>' .
+                    '" text-capitalized>' .
                     $statusObj[$status]['title'] .
-                '</span>';
+                    '</span>';
             })
-            ->addColumn('action', function($row){
+            ->addColumn('action', function ($row) {
                 $user = Auth::user();
-                $btn='<div class="btn-group" role="group" aria-label="Basic example">';
-                if(($user->hasAnyPermission(['user_edit']) && $user->hasRole(['admin','user'])) || $user->hasRole(['super-admin']))
-                    $btn.= '<a href="'.route('user.account',['id'=>$row->id]).'"class="btn btn-outline-primary">Edit</a>';
-                if(($user->hasAnyPermission(['user_edit']) && $user->hasRole(['admin'])) || $user->hasRole(['super-admin']))
-                    $btn.= '<a href="javascript:void(0)"  data-id="'.$row->id.'" class="resetPassword btn btn-outline-warning" data-toggle="modal"  data-target="#resetPassword">Reset Pass</a>';
+                $btn = '<div class="btn-group" role="group" aria-label="Basic example">';
+                if (($user->hasAnyPermission(['user_edit']) && $user->hasRole(['admin', 'user'])) || $user->hasRole(['super-admin']))
+                    $btn .= '<a href="' . route('user.account', ['id' => $row->id]) . '"class="btn btn-outline-primary">Edit</a>';
+                if (($user->hasAnyPermission(['user_edit']) && $user->hasRole(['admin'])) || $user->hasRole(['super-admin']))
+                    $btn .= '<a href="javascript:void(0)"  data-id="' . $row->id . '" class="resetPassword btn btn-outline-warning" data-toggle="modal"  data-target="#resetPassword">Reset Pass</a>';
 
-               $btn.=' </div> ';
+                $btn .= ' </div> ';
                 return $btn;
             })
             ->rawColumns(['firstname', 'role', 'status', 'action'])
@@ -519,11 +543,28 @@ class UserController extends Controller
     public function set_permissions($id)
     {
         $user = User::find($id);
-
         $user->remove_permission($user->permissions);
-        foreach (Request()->except('_token') as $key => $value)
-            $user->set_permissions($key);
-        \Session::put('success', __('locale.Permissions Add Success'));
+        $PermissionUnique = ['documents_create', 'documents_check', 'documents_see'];
+        $error = '';
+        foreach (Request()->except('_token') as $key => $value) {
+            $errorTemp = '';
+            if (in_array($key, $PermissionUnique)) {
+                $userCheck = User::permission($key)->first();
+                if (!empty($userCheck))
+                    $errorTemp = 'Attenzione il ruolo "' . $key . '" è già assegnato all\'utente : ' . $userCheck->firstname . ' ' . $userCheck->lastname;
+            }
+
+            if (empty($errorTemp)) {
+
+                $user->set_permissions($key);
+            } else
+                $error = $errorTemp;
+        }
+
+        if (empty($error))
+            \Session::put('success', __('locale.Permissions Add Success'));
+        else
+            \Session::put('error', __($error));
         return redirect()->route('user.permissions', ['id' => $user->id]);
     }
 
@@ -744,9 +785,10 @@ class UserController extends Controller
         ]);
     }
 
-    private function CheckPremission($request){
-        if(auth()->user()->hasRole('user')){
-            if(!empty($request->id)){
+    private function CheckPremission($request)
+    {
+        if (auth()->user()->hasRole('user')) {
+            if (!empty($request->id)) {
                 abort(403);
             }
 

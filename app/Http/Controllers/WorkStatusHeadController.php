@@ -55,8 +55,8 @@ class WorkStatusHeadController extends Controller
 
 
     public function list(Request $request)
-    {
-
+    {			
+			
         $draw = $request->get('draw');
         $start = $request->get("start");
         $rowperpage = $request->get("length"); // total number of rows per page

@@ -67,6 +67,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'documents',
         'user',
         'workflow',
+        'variation',
         'workProgress',
     ];
 
