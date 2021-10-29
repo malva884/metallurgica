@@ -14,8 +14,9 @@ class CreateDocumentPagesTable extends Migration
     public function up()
     {
         Schema::create('document_pages', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('document');
+            $table->uuid('id')->primary();
+            $table->uuid('document');
+            $table->foreign('document')->references('id')->on('documents');
             $table->text('text');
             $table->timestamps();
         });
